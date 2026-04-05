@@ -1449,9 +1449,26 @@
   }
   .m-success__close:hover { color: #E63946; text-decoration: underline; text-underline-offset: 3px; }
 
+  /* Check cards (step 4) */
+  .m-check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .m-check-full { grid-column: 1 / -1; }
+  .m-check-card { position: relative; }
+  .m-check-card input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
+  .m-check-card .m-check-label {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+    padding: 12px 14px; background: #1A1A1A; border: 1px solid #222; border-radius: 8px;
+    font-size: 0.875rem; font-weight: 500; color: #888; cursor: pointer;
+    transition: all 0.3s; min-height: 44px; justify-content: center;
+  }
+  .m-check-card .m-check-label:hover { border-color: #333; color: #fff; }
+  .m-check-card input:checked + .m-check-label { border-color: #E63946; color: #E63946; background: rgba(230,57,70,0.08); }
+  .m-check-label__sub { font-size: 0.75rem; font-weight: 400; color: #555; }
+  .m-check-card input:checked + .m-check-label .m-check-label__sub { color: rgba(230,57,70,0.6); }
+
   @media (max-width: 480px) {
     .m-radio-grid { grid-template-columns: 1fr; }
     .m-radio-grid--3 { grid-template-columns: 1fr 1fr; }
+    .m-check-grid { grid-template-columns: 1fr; }
   }
 
   </style>
@@ -1994,10 +2011,10 @@
       </button>
     </div>
     <div class="wycena-modal__body">
-      <div class="m-progress" id="m-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="7">
-        <div class="m-progress__track"><div class="m-progress__fill" id="m-progress-fill" style="width:14.28%"></div></div>
+      <div class="m-progress" id="m-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="6">
+        <div class="m-progress__track"><div class="m-progress__fill" id="m-progress-fill" style="width:16.66%"></div></div>
         <div class="m-progress__meta">
-          <p class="m-progress__label">Krok <strong id="m-step-num">1</strong> z 7</p>
+          <p class="m-progress__label">Krok <strong id="m-step-num">1</strong> z 6</p>
           <div class="m-progress__dots" id="m-step-dots" aria-hidden="true"></div>
         </div>
       </div>
@@ -2005,129 +2022,159 @@
         <form id="m-form" novalidate>
           <div class="m-steps-wrap" id="m-steps-wrap">
 
+            <!-- KROK 1: Dane podstawowe -->
             <div class="m-step is-active" id="m-step-1">
-              <h2 class="m-step__title">Jak sie nazywasz?</h2>
+              <h2 class="m-step__title">Jak się nazywasz?</h2>
               <div class="m-group">
-                <label class="m-label" for="m-name">Imie <span class="req">*</span></label>
-                <input class="m-input" type="text" id="m-name" name="name" placeholder="Twoje imie" autocomplete="given-name">
-                <span class="m-error" id="m-err-name">Wpisz swoje imie.</span>
+                <label class="m-label" for="m-fullname">Imię i nazwisko <span class="req">*</span></label>
+                <input class="m-input" type="text" id="m-fullname" name="fullname" placeholder="Jan Kowalski" autocomplete="name">
+                <span class="m-error" id="m-err-fullname">Wpisz swoje imię i nazwisko.</span>
               </div>
               <div class="m-group">
-                <label class="m-label" for="m-company">Nazwa firmy <span class="opt">(opcjonalnie)</span></label>
-                <input class="m-input" type="text" id="m-company" name="company" placeholder="Np. Salon Urody Natalia" autocomplete="organization">
+                <label class="m-label" for="m-company">Nazwa firmy <span class="req">*</span></label>
+                <input class="m-input" type="text" id="m-company" name="company" placeholder="Np. Salon Fryzjerski Elegance" autocomplete="organization">
+                <span class="m-error" id="m-err-company">Wpisz nazwę firmy.</span>
               </div>
             </div>
 
+            <!-- KROK 2: Typ działalności -->
             <div class="m-step" id="m-step-2">
-              <h2 class="m-step__title">Jak sie z Toba skontaktowac?</h2>
-              <p class="m-step__hint">Odezwe sie w ciagu 24h.</p>
-              <div class="m-group">
-                <label class="m-label" for="m-email">Email <span class="req">*</span></label>
-                <input class="m-input" type="email" id="m-email" name="email" placeholder="twoj@email.pl" autocomplete="email">
-                <span class="m-error" id="m-err-email">Podaj prawidlowy adres email.</span>
+              <h2 class="m-step__title">Czym zajmuje się Twoja firma?</h2>
+              <div class="m-radio-grid" role="radiogroup" aria-required="true">
+                <label class="m-radio-card">
+                  <input type="radio" name="m-business" value="E-commerce">
+                  <span class="m-radio-label">E-commerce<span class="m-radio-label__sub">Sklep internetowy, sprzedaż online</span></span>
+                </label>
+                <label class="m-radio-card">
+                  <input type="radio" name="m-business" value="Usługi">
+                  <span class="m-radio-label">Usługi<span class="m-radio-label__sub">Salon, gabinet, warsztat, biuro...</span></span>
+                </label>
               </div>
-              <div class="m-group">
-                <label class="m-label" for="m-phone">Numer telefonu <span class="opt">(opcjonalnie)</span></label>
-                <input class="m-input" type="tel" id="m-phone" name="phone" placeholder="+48 600 000 000" autocomplete="tel">
-              </div>
+              <span class="m-error" id="m-err-business">Wybierz typ działalności.</span>
             </div>
 
+            <!-- KROK 3: Opis firmy -->
             <div class="m-step" id="m-step-3">
-              <h2 class="m-step__title">Czym zajmuje sie Twoja firma?</h2>
-              <div class="m-radio-grid" id="m-business-grid" role="radiogroup">
-                <label class="m-radio-card"><input type="radio" name="m-business" value="Salon fryzjerski / barber"><span class="m-radio-label">Salon fryzjerski / barber</span></label>
-                <label class="m-radio-card"><input type="radio" name="m-business" value="Salon kosmetyczny / beauty"><span class="m-radio-label">Salon kosmetyczny / beauty</span></label>
-                <label class="m-radio-card"><input type="radio" name="m-business" value="Medycyna estetyczna"><span class="m-radio-label">Medycyna estetyczna</span></label>
-                <label class="m-radio-card"><input type="radio" name="m-business" value="Auto detailing"><span class="m-radio-label">Auto detailing</span></label>
-                <label class="m-radio-card"><input type="radio" name="m-business" value="Uslugi dla firm (B2B)"><span class="m-radio-label">Uslugi dla firm (B2B)</span></label>
-                <label class="m-radio-card"><input type="radio" name="m-business" value="Sklep internetowy"><span class="m-radio-label">Sklep internetowy</span></label>
-                <label class="m-radio-card m-radio-full"><input type="radio" name="m-business" value="Inna branza" id="m-business-other-radio"><span class="m-radio-label">Inna branza</span></label>
+              <h2 class="m-step__title">Opisz krótko swoją firmę</h2>
+              <p class="m-step__hint">Pomoże mi lepiej zrozumieć Twój biznes i przygotować trafną propozycję.</p>
+              <div class="m-group">
+                <textarea class="m-textarea" id="m-desc" name="description" placeholder="Np. Prowadzimy salon fryzjerski w centrum Warszawy od 5 lat, specjalizujemy się w koloryzacji..." rows="5" maxlength="500"></textarea>
+                <span id="m-desc-counter" style="font-size:0.75rem;color:#555;text-align:right;display:block;margin-top:4px">0 / 500</span>
               </div>
-              <div class="m-other-reveal" id="m-other-business-wrap">
-                <input class="m-input" type="text" id="m-other-business" name="businessOther" placeholder="Jaka branza?">
-              </div>
-              <span class="m-error" id="m-err-business">Wybierz typ dzialalnosci.</span>
             </div>
 
+            <!-- KROK 4: Czego oczekujesz -->
             <div class="m-step" id="m-step-4">
-              <h2 class="m-step__title">Jakiej strony potrzebujesz?</h2>
-              <div class="m-radio-grid" role="radiogroup">
-                <label class="m-radio-card"><input type="radio" name="m-siteType" value="Strona wizytowka"><span class="m-radio-label">Strona wizytowka<span class="m-radio-label__sub">1-3 podstrony</span></span></label>
-                <label class="m-radio-card"><input type="radio" name="m-siteType" value="Strona z oferta i cennikiem"><span class="m-radio-label">Strona z pelna oferta<span class="m-radio-label__sub">z cennikiem</span></span></label>
-                <label class="m-radio-card"><input type="radio" name="m-siteType" value="Landing page"><span class="m-radio-label">Landing page<span class="m-radio-label__sub">jedna strona, jeden cel</span></span></label>
-                <label class="m-radio-card"><input type="radio" name="m-siteType" value="Sklep internetowy"><span class="m-radio-label">Sklep internetowy<span class="m-radio-label__sub">e-commerce</span></span></label>
-                <label class="m-radio-card m-radio-full"><input type="radio" name="m-siteType" value="Nie wiem - doradz mi"><span class="m-radio-label">Nie wiem jeszcze - doradz mi</span></label>
+              <h2 class="m-step__title">Czego potrzebujesz?</h2>
+              <p class="m-step__hint">Możesz wybrać kilka opcji.</p>
+              <div class="m-check-grid" role="group" aria-required="true">
+                <label class="m-check-card">
+                  <input type="checkbox" name="m-needs" value="Strona wizytówka">
+                  <span class="m-check-label">Strona wizytówka<span class="m-check-label__sub">1-3 podstrony, podstawowe info</span></span>
+                </label>
+                <label class="m-check-card">
+                  <input type="checkbox" name="m-needs" value="Strona z pełną ofertą">
+                  <span class="m-check-label">Strona z pełną ofertą<span class="m-check-label__sub">Cennik, galeria, opisy usług</span></span>
+                </label>
+                <label class="m-check-card">
+                  <input type="checkbox" name="m-needs" value="Landing page">
+                  <span class="m-check-label">Landing page<span class="m-check-label__sub">Jedna strona, jeden cel</span></span>
+                </label>
+                <label class="m-check-card">
+                  <input type="checkbox" name="m-needs" value="Sklep internetowy">
+                  <span class="m-check-label">Sklep internetowy<span class="m-check-label__sub">E-commerce, koszyk, płatności</span></span>
+                </label>
+                <label class="m-check-card">
+                  <input type="checkbox" name="m-needs" value="Integracja z Booksy">
+                  <span class="m-check-label">Integracja z Booksy<span class="m-check-label__sub">Rezerwacje online</span></span>
+                </label>
+                <label class="m-check-card">
+                  <input type="checkbox" name="m-needs" value="Galeria przed/po">
+                  <span class="m-check-label">Galeria przed/po<span class="m-check-label__sub">Portfolio z efektami</span></span>
+                </label>
+                <label class="m-check-card">
+                  <input type="checkbox" name="m-needs" value="Formularz kontaktowy">
+                  <span class="m-check-label">Formularz kontaktowy<span class="m-check-label__sub">Zapytania od klientów</span></span>
+                </label>
+                <label class="m-check-card">
+                  <input type="checkbox" name="m-needs" value="Optymalizacja SEO">
+                  <span class="m-check-label">Optymalizacja SEO<span class="m-check-label__sub">Widoczność w Google</span></span>
+                </label>
+                <label class="m-check-card m-check-full">
+                  <input type="checkbox" name="m-needs" value="Nie wiem — doradzisz mi">
+                  <span class="m-check-label">Nie wiem — doradzisz mi<span class="m-check-label__sub">Opowiem co potrzebuję</span></span>
+                </label>
               </div>
-              <span class="m-error" id="m-err-site">Wybierz typ strony.</span>
+              <span class="m-error" id="m-err-needs">Wybierz co najmniej jedną opcję.</span>
             </div>
 
+            <!-- KROK 5: Social media -->
             <div class="m-step" id="m-step-5">
               <h2 class="m-step__title">Twoje social media</h2>
-              <p class="m-step__hint">Podaj linki do swoich profili. Wszystkie pola opcjonalne.</p>
+              <p class="m-step__hint">Podaj linki do profili — pomoże mi poznać Twoją markę. Wszystkie pola opcjonalne.</p>
               <div class="m-group">
-                <label class="m-label" for="m-ig">Instagram <span class="opt">(opcjonalnie)</span></label>
+                <label class="m-label" for="m-ig">Instagram</label>
                 <div class="m-social-field">
                   <div class="m-social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg></div>
                   <input type="url" id="m-ig" name="instagram" placeholder="https://instagram.com/twojprofil">
                 </div>
               </div>
               <div class="m-group">
-                <label class="m-label" for="m-fb">Facebook <span class="opt">(opcjonalnie)</span></label>
+                <label class="m-label" for="m-fb">Facebook</label>
                 <div class="m-social-field">
                   <div class="m-social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></div>
                   <input type="url" id="m-fb" name="facebook" placeholder="https://facebook.com/twojafirma">
                 </div>
               </div>
               <div class="m-group">
-                <label class="m-label" for="m-tt">TikTok <span class="opt">(opcjonalnie)</span></label>
+                <label class="m-label" for="m-tt">TikTok</label>
                 <div class="m-social-field">
                   <div class="m-social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 12a4 4 0 104 4V4a5 5 0 005 5"/></svg></div>
                   <input type="url" id="m-tt" name="tiktok" placeholder="https://tiktok.com/@twojprofil">
                 </div>
               </div>
               <div class="m-group">
-                <label class="m-label" for="m-yt">YouTube <span class="opt">(opcjonalnie)</span></label>
+                <label class="m-label" for="m-booksy">Booksy</label>
                 <div class="m-social-field">
-                  <div class="m-social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
-                  <input type="url" id="m-yt" name="youtube" placeholder="https://youtube.com/@twojkanal">
+                  <div class="m-social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="15" r="1.5"/></svg></div>
+                  <input type="url" id="m-booksy" name="booksy" placeholder="https://booksy.com/pl-pl/twojsalon">
                 </div>
               </div>
               <div class="m-group">
-                <label class="m-label" for="m-other-social">Inne <span class="opt">(opcjonalnie)</span></label>
+                <label class="m-label" for="m-linkedin">LinkedIn</label>
+                <div class="m-social-field">
+                  <div class="m-social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></div>
+                  <input type="url" id="m-linkedin" name="linkedin" placeholder="https://linkedin.com/in/twojprofil">
+                </div>
+              </div>
+              <div class="m-group">
+                <label class="m-label" for="m-other-link">Inna strona / link</label>
                 <div class="m-social-field">
                   <div class="m-social-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
-                  <input type="text" id="m-other-social" name="otherSocial" placeholder="np. Google Maps, LinkedIn, Allegro...">
+                  <input type="text" id="m-other-link" name="otherLink" placeholder="np. Google Maps, YouTube, Allegro...">
                 </div>
               </div>
             </div>
 
+            <!-- KROK 6: Kontakt -->
             <div class="m-step" id="m-step-6">
-              <h2 class="m-step__title">Cos jeszcze...</h2>
+              <h2 class="m-step__title">Jak się z Tobą skontaktować?</h2>
+              <p class="m-step__hint">Odezwę się w ciągu 24h.</p>
               <div class="m-group">
-                <label class="m-label" for="m-desc">Opisz krotko, czego potrzebujesz</label>
-                <textarea class="m-textarea" id="m-desc" name="description" placeholder="Np. potrzebuje strony dla salonu kosmetycznego, mam logotyp, potrzeba formularza rezerwacji..." rows="4"></textarea>
+                <label class="m-label" for="m-email">Email <span class="req">*</span></label>
+                <input class="m-input" type="email" id="m-email" name="email" placeholder="twoj@email.pl" autocomplete="email">
+                <span class="m-error" id="m-err-email">Podaj prawidłowy adres email.</span>
               </div>
               <div class="m-group">
-                <label class="m-label" for="m-deadline">Preferowany termin</label>
-                <select class="m-select" id="m-deadline" name="deadline">
-                  <option value="" disabled selected>Wybierz termin...</option>
-                  <option value="ASAP">ASAP - jak najszybciej</option>
-                  <option value="2-4 tygodnie">2-4 tygodnie</option>
-                  <option value="1-2 miesiace">1-2 miesiace</option>
-                  <option value="nie spieszy mi sie">Nie spieszy mi sie</option>
-                </select>
+                <label class="m-label" for="m-phone">Telefon <span class="req">*</span></label>
+                <input class="m-input" type="tel" id="m-phone" name="phone" placeholder="+48 600 000 000" autocomplete="tel">
+                <span class="m-error" id="m-err-phone">Podaj numer telefonu (min. 9 cyfr).</span>
               </div>
-              <label class="m-check-group">
+              <label class="m-check-group" style="margin-top:8px">
                 <input type="checkbox" id="m-consent" name="consent">
-                <span class="m-check-label">Zgadzam sie na kontakt w sprawie wyceny projektu przez DigitalAbyss.<span class="req" style="margin-left:4px">*</span></span>
+                <span class="m-check-label">Zgadzam się na kontakt w sprawie wyceny projektu przez DigitalAbyss.<span class="req" style="margin-left:4px">*</span></span>
               </label>
               <span class="m-error" id="m-err-consent">Wymagana zgoda na kontakt.</span>
-            </div>
-
-            <div class="m-step" id="m-step-7">
-              <h2 class="m-step__title">Podsumowanie</h2>
-              <p class="m-step__hint">Sprawdz dane przed wyslaniem.</p>
-              <div class="m-summary" id="m-summary-box"></div>
             </div>
 
           </div>
@@ -2967,11 +3014,11 @@
 var mCur = 1, mDir = 1;
 (function() {
 'use strict';
-const TOTAL = 7;
+var TOTAL = 6;
 var mReady = false;
 
 function openWycena() {
-  const modal = document.getElementById('wycena-modal');
+  var modal = document.getElementById('wycena-modal');
   modal.classList.add('is-open');
   document.body.style.overflow = 'hidden';
   if (!mReady) { mInit(); mReady = true; }
@@ -2987,7 +3034,6 @@ function closeWycena() {
   if (!modal) return;
   modal.classList.remove('is-open');
   document.body.style.overflow = '';
-  // Reset form if success screen was shown
   var success = document.getElementById('m-success');
   if (success && success.classList.contains('is-visible')) {
     success.classList.remove('is-visible');
@@ -2997,23 +3043,18 @@ function closeWycena() {
     if (stepsWrap) stepsWrap.style.display = '';
     if (formNav)   formNav.style.display   = '';
     if (progress)  progress.style.display  = '';
-    // Reset step
     document.querySelectorAll('.m-step').forEach(function(el) { el.classList.remove('is-active'); });
     var step1 = document.getElementById('m-step-1');
     if (step1) step1.classList.add('is-active');
-    // Reset form inputs
     var form = document.getElementById('m-form');
     if (form) form.reset();
-    // Reset step counter
+    var counter = document.getElementById('m-desc-counter');
+    if (counter) counter.textContent = '0 / 500';
     mCur = 1; mDir = 1;
     if (window._mUpdateProgress) window._mUpdateProgress();
   }
 }
 window.closeWycena = closeWycena;
-
-function mEsc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
 
 function mRenderDots() {
   var wrap = document.getElementById('m-step-dots');
@@ -3026,9 +3067,7 @@ function mRenderDots() {
   }
 }
 
-window._mUpdateProgress = function mUpdateProgress() {
-  mUpdateProgress();
-};
+window._mUpdateProgress = function() { mUpdateProgress(); };
 function mUpdateProgress() {
   var fill = document.getElementById('m-progress-fill');
   var num  = document.getElementById('m-step-num');
@@ -3042,7 +3081,7 @@ function mUpdateProgress() {
   mRenderDots();
   prev.style.visibility = mCur > 1 ? 'visible' : 'hidden';
   if (mCur === TOTAL) {
-    next.innerHTML = 'Wyslij zapytanie <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+    next.innerHTML = 'Wyślij zapytanie <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
   } else {
     next.innerHTML = 'Dalej <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
   }
@@ -3051,40 +3090,45 @@ function mUpdateProgress() {
 function mValidate(step) {
   var ok = true;
   function err(id, eid) {
-    var el = document.getElementById(id), e = document.getElementById(eid);
-    if (el) el.classList.add('is-error');
+    var el = id ? document.getElementById(id) : null;
+    var e  = eid ? document.getElementById(eid) : null;
+    if (el) { el.classList.add('is-error'); if (ok) el.focus(); }
     if (e)  e.classList.add('is-visible');
-    if (ok && el) el.focus();
     ok = false;
   }
   function clr(id, eid) {
-    var el = document.getElementById(id), e = document.getElementById(eid);
+    var el = id ? document.getElementById(id) : null;
+    var e  = eid ? document.getElementById(eid) : null;
     if (el) el.classList.remove('is-error');
     if (e)  e.classList.remove('is-visible');
   }
+
   if (step === 1) {
-    clr('m-name','m-err-name');
-    if (!document.getElementById('m-name').value.trim()) err('m-name','m-err-name');
+    clr('m-fullname', 'm-err-fullname');
+    clr('m-company',  'm-err-company');
+    if (!document.getElementById('m-fullname').value.trim()) err('m-fullname', 'm-err-fullname');
+    if (!document.getElementById('m-company').value.trim())  err('m-company',  'm-err-company');
   }
   if (step === 2) {
-    clr('m-email','m-err-email');
-    var em = document.getElementById('m-email').value.trim();
-    if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) err('m-email','m-err-email');
-  }
-  if (step === 3) {
     var errB = document.getElementById('m-err-business');
     if (!document.querySelector('input[name="m-business"]:checked')) {
       errB.classList.add('is-visible'); ok = false;
     } else errB.classList.remove('is-visible');
   }
   if (step === 4) {
-    var errS = document.getElementById('m-err-site');
-    if (!document.querySelector('input[name="m-siteType"]:checked')) {
-      errS.classList.add('is-visible'); ok = false;
-    } else errS.classList.remove('is-visible');
+    var errN = document.getElementById('m-err-needs');
+    if (!document.querySelector('input[name="m-needs"]:checked')) {
+      errN.classList.add('is-visible'); ok = false;
+    } else errN.classList.remove('is-visible');
   }
   if (step === 6) {
-    clr('m-consent','m-err-consent');
+    clr('m-email', 'm-err-email');
+    clr('m-phone', 'm-err-phone');
+    clr(null, 'm-err-consent');
+    var em = document.getElementById('m-email').value.trim();
+    if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) err('m-email', 'm-err-email');
+    var ph = document.getElementById('m-phone').value.replace(/[\s\-\+\(\)]/g, '');
+    if (ph.replace(/\D/g, '').length < 9) err('m-phone', 'm-err-phone');
     if (!document.getElementById('m-consent').checked) {
       document.getElementById('m-err-consent').classList.add('is-visible'); ok = false;
     }
@@ -3097,39 +3141,25 @@ function mGetData() {
     var el = document.querySelector('input[name="' + n + '"]:checked');
     return el ? el.value : '';
   }
+  function checkboxes(n) {
+    var els = document.querySelectorAll('input[name="' + n + '"]:checked');
+    return Array.from(els).map(function(el) { return el.value; }).join(', ');
+  }
   return {
-    name:        document.getElementById('m-name').value.trim(),
+    fullname:    document.getElementById('m-fullname').value.trim(),
     company:     document.getElementById('m-company').value.trim(),
-    email:       document.getElementById('m-email').value.trim(),
-    phone:       document.getElementById('m-phone').value.trim(),
-    business:    radio('m-business') === 'Inna branza'
-                   ? (document.getElementById('m-other-business').value.trim() || 'Inna branza')
-                   : radio('m-business'),
-    siteType:    radio('m-siteType'),
+    business:    radio('m-business'),
+    description: document.getElementById('m-desc').value.trim(),
+    needs:       checkboxes('m-needs'),
     instagram:   document.getElementById('m-ig').value.trim(),
     facebook:    document.getElementById('m-fb').value.trim(),
     tiktok:      document.getElementById('m-tt').value.trim(),
-    youtube:     document.getElementById('m-yt').value.trim(),
-    otherSocial: document.getElementById('m-other-social').value.trim(),
-    description: document.getElementById('m-desc').value.trim(),
-    deadline:    document.getElementById('m-deadline').value
+    booksy:      document.getElementById('m-booksy').value.trim(),
+    linkedin:    document.getElementById('m-linkedin').value.trim(),
+    otherLink:   document.getElementById('m-other-link').value.trim(),
+    email:       document.getElementById('m-email').value.trim(),
+    phone:       document.getElementById('m-phone').value.trim()
   };
-}
-
-function mRenderSummary() {
-  var d = mGetData();
-  var rows = [
-    {k:'Imie',v:d.name},{k:'Firma',v:d.company},{k:'Email',v:d.email},
-    {k:'Telefon',v:d.phone},{k:'Branza',v:d.business},{k:'Typ strony',v:d.siteType},
-    {k:'Instagram',v:d.instagram},{k:'Facebook',v:d.facebook},{k:'TikTok',v:d.tiktok},
-    {k:'YouTube',v:d.youtube},{k:'Inne social',v:d.otherSocial},{k:'Opis',v:d.description},
-    {k:'Termin',v:d.deadline}
-  ].filter(function(r){return r.v;});
-  var box = document.getElementById('m-summary-box');
-  if (box) box.innerHTML = rows.map(function(r){
-    return '<div class="m-summary__row"><span class="m-summary__key">' + mEsc(r.k) +
-           '</span><span class="m-summary__val">' + mEsc(r.v) + '</span></div>';
-  }).join('');
 }
 
 function mGoTo(next) {
@@ -3157,45 +3187,48 @@ async function mSubmit() {
   var ACCESS_KEY = '0d2ecb1d-5ac3-4a04-812a-8b54637f0161';
   var btnNext = document.getElementById('m-btn-next');
   btnNext.disabled = true;
-  btnNext.textContent = 'Wysylanie...';
+  btnNext.textContent = 'Wysyłanie...';
   try {
-    var ok = false;
-    if (ACCESS_KEY !== 'TODO_INSERT_ACCESS_KEY') {
-      var payload = new FormData();
-      payload.append('access_key', ACCESS_KEY);
-      payload.append('subject', 'Wycena projektu - DigitalAbyss.pl');
-      payload.append('from_name', 'Formularz DigitalAbyss');
-      Object.entries(data).forEach(function(kv){ if(kv[1]) payload.append(kv[0], kv[1]); });
-      var res  = await fetch('https://api.web3forms.com/submit', {method:'POST', body:payload});
-      var json = await res.json();
-      ok = json.success;
-    } else {
-      console.log('[DigitalAbyss] Dane formularza:', data);
-      ok = true;
-    }
-    if (ok) {
+    var payload = new FormData();
+    payload.append('access_key', ACCESS_KEY);
+    payload.append('subject', 'Wycena projektu - DigitalAbyss.pl');
+    payload.append('from_name', 'Formularz DigitalAbyss');
+    Object.entries(data).forEach(function(kv) { if (kv[1]) payload.append(kv[0], kv[1]); });
+    var res  = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: payload });
+    var json = await res.json();
+    if (json.success) {
       document.getElementById('m-steps-wrap').style.display = 'none';
       document.getElementById('m-form-nav').style.display   = 'none';
       document.getElementById('m-progress').style.display   = 'none';
       document.getElementById('m-success').classList.add('is-visible');
     } else {
       btnNext.disabled = false;
-      btnNext.textContent = 'Sprobuj ponownie';
+      btnNext.textContent = 'Spróbuj ponownie';
     }
   } catch(e) {
     console.error(e);
     btnNext.disabled = false;
-    btnNext.textContent = 'Sprobuj ponownie';
+    btnNext.textContent = 'Spróbuj ponownie';
   }
 }
 
 function mInit() {
   mUpdateProgress();
 
+  /* Licznik znaków krok 3 */
+  var descField   = document.getElementById('m-desc');
+  var descCounter = document.getElementById('m-desc-counter');
+  if (descField && descCounter) {
+    descField.addEventListener('input', function() {
+      var len = descField.value.length;
+      if (len > 500) descField.value = descField.value.substring(0, 500);
+      descCounter.textContent = Math.min(len, 500) + ' / 500';
+    });
+  }
+
   document.getElementById('m-btn-next').addEventListener('click', function() {
     if (!mValidate(mCur)) return;
     if (mCur === TOTAL) { mSubmit(); return; }
-    if (mCur === TOTAL - 1) mRenderSummary();
     mDir = 1;
     mGoTo(mCur + 1);
   });
@@ -3204,16 +3237,6 @@ function mInit() {
     if (mCur <= 1) return;
     mDir = -1;
     mGoTo(mCur - 1);
-  });
-
-  document.querySelectorAll('input[name="m-business"]').forEach(function(r) {
-    r.addEventListener('change', function() {
-      var wrap = document.getElementById('m-other-business-wrap');
-      if (r.value === 'Inna branza' && r.checked) {
-        wrap.classList.add('is-visible');
-        document.getElementById('m-other-business').focus();
-      } else wrap.classList.remove('is-visible');
-    });
   });
 
   document.getElementById('wycena-backdrop').addEventListener('click', closeWycena);
