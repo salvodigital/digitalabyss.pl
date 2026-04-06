@@ -24,7 +24,7 @@
   <meta property="og:url" content="https://digitalabyss.pl">
   <meta property="og:image" content="https://placehold.co/1200x630/0A0A0A/E63946?text=DigitalAbyss">
   <!-- TODO: Zastąp logo.png plikiem z folderu projektu gdy będzie dostępny -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230A0A0A'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='14' fill='%23E63946'>DA</text></svg>">
+  <link rel="icon" href="./favicon.png" type="image/png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -106,6 +106,7 @@
       width: 100%;
       margin: 0 auto;
       padding: 0 var(--container-pad);
+      overflow-x: hidden;
     }
 
     .section { padding: var(--section-pad) 0; }
@@ -241,6 +242,15 @@
     }
     .header__logo span { color: var(--color-accent); }
     .header__logo:hover { color: var(--color-accent); }
+    .header__logo img {
+      height: 48px;
+      width: auto;
+      display: block;
+      transition: height var(--transition);
+    }
+    .header.is-scrolled .header__logo img { height: 36px; }
+    .footer__logo img { height: 60px; width: auto; display: block; }
+    .footer__bottom img { height: 48px; width: auto; opacity: 0.6; }
 
     /* Nav - takes remaining space, pushes items to the right */
     .header__nav {
@@ -1000,6 +1010,12 @@
     @media (max-width: 768px) {
       :root { --nav-height: 64px; --container-pad: 20px; }
 
+      /* Logo mobile */
+      .header__logo img { height: 38px; }
+      .header.is-scrolled .header__logo img { height: 30px; }
+      .footer__logo img { height: 50px; }
+      .footer__bottom img { height: 40px; }
+
       /* Nav */
       .header__nav .nav__list,
       .header__nav > .btn { display: none; }
@@ -1034,16 +1050,36 @@
       .about__inner { grid-template-columns: 1fr; gap: 32px; }
       .about__visual { max-width: 260px; margin: 0 auto; aspect-ratio: 4/5; }
 
-      /* Contact */
-      .contact__inner { grid-template-columns: 1fr; gap: 32px; }
-      .contact__cta-block { padding: 24px; }
+      /* Contact — CTA blok PIERWSZY na mobile */
+      .contact__inner {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+      .contact__cta-block {
+        order: -1;
+        padding: 24px 20px;
+        width: 100%;
+        max-width: 100%;
+      }
+      .contact__cta-block .btn {
+        font-size: 0.875rem;
+        white-space: normal;
+        text-align: center;
+      }
 
       /* Footer */
       .footer__inner { grid-template-columns: 1fr; text-align: center; gap: 32px; }
+      .footer__brand { order: 1; }
+      .footer__center { order: 2; align-items: center; }
+      .footer__right { order: 3; align-items: center; text-align: center; }
       .footer__social { justify-content: center; }
-      .footer__right { align-items: center; text-align: center; }
-      .footer__center { align-items: center; }
-      .footer__bottom { justify-content: center; text-align: center; }
+      .footer__bottom {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        gap: 8px;
+      }
 
       /* FAQ */
       .faq__list { gap: 8px; }
@@ -1054,17 +1090,17 @@
       .cookie-banner {
         flex-direction: column;
         align-items: stretch;
-        gap: 12px;
-        padding: 16px 20px;
+        gap: 10px;
+        padding: 14px 16px;
       }
-      .cookie-banner__text { font-size: 0.8125rem; }
-      .cookie-banner__actions { width: 100%; flex-wrap: wrap; }
+      .cookie-banner__text { font-size: 0.8rem; line-height: 1.5; }
+      .cookie-banner__actions { width: 100%; flex-wrap: wrap; gap: 8px; }
       .cookie-banner__actions .btn {
         flex: 1;
         min-width: 0;
         justify-content: center;
-        padding: 12px 16px;
-        font-size: 0.8125rem;
+        padding: 10px 14px;
+        font-size: 0.8rem;
       }
       .cookie-settings-btn { width: 100%; text-align: center; padding: 8px; }
 
@@ -1077,10 +1113,17 @@
       .section__title { font-size: clamp(1.6rem, 6vw, 2.2rem); }
     }
 
+    @media (max-width: 480px) {
+      .portfolio__preview-wrap { height: 240px; }
+      .comparison__window { height: 300px; }
+    }
+
     @media (max-width: 380px) {
       :root { --container-pad: 16px; }
+      .hero__content { padding-top: calc(var(--nav-height) + 16px); }
       .hero__title { font-size: 1.6rem; }
-      .hero__subtitle { font-size: 0.9375rem; }
+      .hero__subtitle { font-size: 0.9375rem; margin-bottom: 28px; }
+      .hero__ctas .btn { padding: 12px 20px; font-size: 0.875rem; }
       .section__title { font-size: 1.4rem; }
       .services__card { padding: 20px 16px; }
       .why__block { padding: 20px 16px; }
@@ -1089,7 +1132,7 @@
 
     /* ========== SCROLL PROGRESS BAR ========== */
     .scroll-progress {
-      position: fixed; top: 0; left: 0; z-index: 999;
+      position: fixed; top: 0; left: 0; z-index: 1000;
       height: 3px; width: 0;
       background: var(--color-accent);
       transition: width 0.1s linear;
@@ -1252,9 +1295,12 @@
     z-index: 1000;
     align-items: flex-end;
     justify-content: center;
+    padding: 0;
   }
   .wycena-modal.is-open { display: flex; }
-  @media (min-width: 600px) { .wycena-modal { align-items: center; } }
+  @media (min-width: 600px) {
+    .wycena-modal { align-items: center; padding: 16px; }
+  }
 
   .wycena-modal__backdrop {
     position: absolute;
@@ -1273,14 +1319,14 @@
     border: 1px solid #222;
     border-radius: 16px 16px 0 0;
     width: 100%;
-    max-width: 680px;
+    max-width: 100%;
     max-height: 92vh;
     overflow-y: auto;
     overscroll-behavior: contain;
     animation: mPanelUp 0.32s cubic-bezier(0.34,1.08,0.64,1) forwards;
   }
   @media (min-width: 600px) {
-    .wycena-modal__panel { border-radius: 16px; max-height: 90vh; }
+    .wycena-modal__panel { border-radius: 16px; max-height: 90vh; max-width: 680px; }
   }
   @keyframes mPanelUp {
     from { opacity:0; transform: translateY(40px); }
@@ -1316,7 +1362,7 @@
   .wycena-modal__close:hover { background: #222; color: #fff; }
   .wycena-modal__close svg { width: 16px; height: 16px; }
 
-  .wycena-modal__body { padding: 20px 24px 32px; }
+  .wycena-modal__body { padding: 20px 24px 32px; overflow-x: hidden; }
 
   .m-progress { margin-bottom: 24px; }
   .m-progress__track { height: 3px; background: #222; border-radius: 100px; overflow: hidden; margin-bottom: 8px; }
@@ -1330,8 +1376,8 @@
   .m-dot.is-current { background: #E63946; box-shadow: 0 0 0 3px rgba(230,57,70,0.2); transform: scale(1.2); }
 
   .m-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; }
-  .m-steps-wrap { position: relative; overflow: hidden; min-height: 280px; padding: 28px 28px 8px; }
-  @media (max-width: 480px) { .m-steps-wrap { padding: 20px 16px 8px; } }
+  .m-steps-wrap { position: relative; overflow: hidden; min-height: 280px; padding: 28px 28px 8px; max-width: 100%; }
+  @media (max-width: 480px) { .m-steps-wrap { padding: 16px 14px 8px; } }
 
   .m-step { display: none; flex-direction: column; gap: 18px; }
   .m-step.is-active { display: flex; }
@@ -1402,9 +1448,9 @@
   }
   .m-social-icon svg { width: 18px; height: 18px; }
   .m-social-field input {
-    flex:1; background: transparent; border: none; color: #fff;
+    flex: 1; min-width: 0; background: transparent; border: none; color: #fff;
     font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
-    padding: 11px 12px; min-height: 46px;
+    padding: 11px 12px; min-height: 46px; width: 100%;
   }
   .m-social-field input::placeholder { color: #555; }
   .m-social-field input:focus { outline: none; }
@@ -1469,6 +1515,11 @@
     .m-radio-grid { grid-template-columns: 1fr; }
     .m-radio-grid--3 { grid-template-columns: 1fr 1fr; }
     .m-check-grid { grid-template-columns: 1fr; }
+    .wycena-modal__body { padding: 16px 16px 24px; }
+    .m-form-nav { padding: 12px 14px 18px; }
+    .m-social-field { max-width: 100%; }
+    .m-summary__key { min-width: 80px; }
+    .m-summary__row { flex-wrap: wrap; }
   }
 
   </style>
@@ -1483,7 +1534,7 @@
     <div class="header__inner">
 
       <a href="#hero" class="header__logo" aria-label="DigitalAbyss - strona główna">
-        Digital<span>Abyss</span>
+        <img src="./logo.png" alt="DigitalAbyss">
       </a>
 
       <nav class="header__nav" aria-label="Nawigacja główna">
@@ -1928,7 +1979,9 @@
     <div class="footer__inner">
 
       <div class="footer__brand">
-        <a href="#hero" class="footer__logo" aria-label="DigitalAbyss">Digital<span>Abyss</span></a>
+        <a href="#hero" class="footer__logo" aria-label="DigitalAbyss">
+          <img src="./logo.png" alt="DigitalAbyss">
+        </a>
         <p class="footer__tagline">Strony internetowe, które sprzedają.</p>
         <nav class="footer__social" aria-label="Media społecznościowe">
           <a href="https://www.instagram.com/digitalabyss.pl/" class="footer__social-link"
@@ -1971,6 +2024,9 @@
     </div>
 
     <div class="footer__bottom">
+      <a href="#hero" aria-label="DigitalAbyss" style="display:flex;justify-content:center;margin-bottom:16px;">
+        <img src="./logo.png" alt="DigitalAbyss">
+      </a>
       <p class="footer__copy">© 2026 DigitalAbyss. Wszelkie prawa zastrzeżone.</p>
       <p class="footer__copy">Zaprojektowane i zrealizowane przez DigitalAbyss</p>
     </div>
