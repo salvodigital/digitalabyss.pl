@@ -51,15 +51,16 @@
 
   <style>
     /* ========== RESET & VARIABLES ========== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; scrollbar-width: none; -ms-overflow-style: none; }
+    *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 
     :root {
-      --color-bg:           #0A0A0A;
-      --color-bg-elevated:  #111111;
-      --color-bg-subtle:    #1A1A1A;
-      --color-accent:       #E63946;
-      --color-accent-hover: #FF4D5A;
-      --color-accent-dim:   rgba(230, 57, 70, 0.12);
+      --color-bg:           #060606;
+      --color-bg-elevated:  #0D0D0D;
+      --color-bg-subtle:    #111111;
+      --color-accent:       #FF1F2E;
+      --color-accent-hover: #FF4040;
+      --color-accent-dim:   rgba(255, 31, 46, 0.13);
       --color-text:         #FFFFFF;
       --color-text-muted:   #888888;
       --color-text-subtle:  #555555;
@@ -73,6 +74,8 @@
       --container-pad:      clamp(20px, 5vw, 48px);
       --radius:             8px;
       --transition:         0.3s ease;
+      --ease-out:           cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-in-out:        cubic-bezier(0.77, 0, 0.175, 1);
     }
 
     html {
@@ -81,7 +84,10 @@
       background: #0A0A0A;
       overscroll-behavior: none;
       -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
+    html::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
     body {
       background: var(--color-bg);
@@ -92,7 +98,10 @@
       max-width: 100vw;
       overscroll-behavior: none;
       -webkit-font-smoothing: antialiased;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
+    body::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
     img, iframe { max-width: 100%; }
     img { height: auto; display: block; }
@@ -139,7 +148,8 @@
       font-family: var(--font-heading);
       font-weight: 800;
       font-size: clamp(2rem, 4vw, 3rem);
-      line-height: 1.25;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
       margin-bottom: 16px;
     }
 
@@ -153,10 +163,9 @@
     /* Scroll reveal */
     .reveal {
       opacity: 0;
-      transform: translateY(32px);
-      transition: opacity 0.75s ease, transform 0.75s ease;
+      transition: opacity 0.6s var(--ease-out);
     }
-    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+    .reveal.is-visible { opacity: 1; }
 
     /* ========== BUTTONS ========== */
     .btn {
@@ -171,18 +180,20 @@
       font-size: 0.9375rem;
       min-height: 48px;
       min-width: 44px;
-      transition: background var(--transition), color var(--transition),
-                  border-color var(--transition), transform 0.2s ease,
-                  box-shadow var(--transition);
+      transition: background 0.25s var(--ease-out), color 0.25s var(--ease-out),
+                  border-color 0.25s var(--ease-out), transform 0.15s var(--ease-out),
+                  box-shadow 0.25s var(--ease-out);
       white-space: nowrap;
+      will-change: transform;
     }
     .btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+    .btn:active { transform: scale(0.97) !important; transition-duration: 0.1s; }
 
     .btn--primary { background: var(--color-accent); color: #fff; }
     .btn--primary:hover {
       background: var(--color-accent-hover);
-      transform: scale(1.02);
-      box-shadow: 0 0 24px rgba(230,57,70,0.35);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(255,31,46,0.4);
     }
 
     .btn--outline {
@@ -193,7 +204,6 @@
     .btn--outline:hover {
       border-color: var(--color-accent);
       color: var(--color-accent);
-      transform: scale(1.02);
     }
 
     .btn--ghost {
@@ -433,6 +443,16 @@
       opacity: 0;
       transform: translateY(20px);
       animation: fadeUp 0.85s ease-out 0.85s forwards;
+      position: relative;
+    }
+    .hero__ctas::after {
+      content: '';
+      position: absolute;
+      left: -20px; bottom: -40px;
+      width: 220px; height: 60px;
+      background: radial-gradient(ellipse at center, rgba(255,31,46,0.25) 0%, transparent 70%);
+      pointer-events: none;
+      filter: blur(12px);
     }
 
 
@@ -454,13 +474,15 @@
       border: 1px solid var(--color-border);
       border-radius: var(--radius);
       padding: 32px 28px;
-      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      transition: border-color 0.25s var(--ease-out), transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+      will-change: transform;
     }
     .services__card:hover {
-      border-color: var(--color-accent);
-      transform: translateY(-5px);
-      box-shadow: 0 8px 32px rgba(230,57,70,0.1);
+      border-color: rgba(255,31,46,0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(255,31,46,0.12);
     }
+    .services__card:active { transform: translateY(-2px); }
 
     .services__icon {
       width: 44px;
@@ -484,7 +506,27 @@
     }
 
     /* ========== WHY US ========== */
-    .why { background: var(--color-bg-subtle); }
+    .why {
+      background: var(--color-bg-subtle);
+      position: relative;
+      overflow: hidden;
+    }
+    .why::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,31,46,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,31,46,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      background-position: center center;
+      pointer-events: none;
+      animation: grid-drift 20s linear infinite;
+    }
+    @keyframes grid-drift {
+      0%   { background-position: 0 0; }
+      100% { background-position: 48px 48px; }
+    }
 
     .why__grid {
       display: grid;
@@ -497,12 +539,14 @@
       border: 1px solid var(--color-border);
       border-radius: var(--radius);
       background: var(--color-bg-elevated);
-      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s var(--ease-out), transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
     }
     .why__block:hover {
-      border-color: var(--color-border-hover);
+      border-color: rgba(255,31,46,0.35);
       transform: translateY(-4px);
-      box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 32px rgba(255,31,46,0.1);
     }
 
     .why__block-number {
@@ -513,6 +557,20 @@
       letter-spacing: 0.14em;
       text-transform: uppercase;
       margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .why__block-number::before {
+      content: attr(data-n);
+      position: absolute;
+      top: -28px;
+      left: -8px;
+      font-size: 7rem;
+      font-weight: 800;
+      color: rgba(255,31,46,0.05);
+      line-height: 1;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .why__block-title {
@@ -628,7 +686,7 @@
       font-weight: 600;
       color: var(--color-accent);
       background: var(--color-accent-dim);
-      border: 1px solid rgba(230,57,70,0.2);
+      border: 1px solid rgba(255,31,46,0.2);
       padding: 4px 12px;
       border-radius: 100px;
     }
@@ -641,77 +699,132 @@
       margin-top: 24px;
     }
 
-    /* ===== BEFORE / AFTER ===== */
+
+    /* ========== BEFORE / AFTER SLIDER ========== */
     .comparison {
       background: var(--color-bg-subtle);
+      position: relative;
+      overflow: hidden;
+    }
+    .comparison::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse at top, rgba(255,31,46,0.08) 0%, transparent 70%);
+      pointer-events: none;
     }
 
-    .comparison__grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
-    }
-
-    .comparison__panel {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .comparison__label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-
-    .comparison__label--before {
-      color: var(--color-text-subtle);
-    }
-
-    .comparison__label--after {
-      color: var(--color-accent);
-    }
-
-    .comparison__label-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .comparison__label--before .comparison__label-dot { background: var(--color-text-subtle); }
-    .comparison__label--after  .comparison__label-dot { background: var(--color-accent); }
-
-    .comparison__window {
+    .comparison__slider {
+      position: relative;
+      height: 750px;
       border-radius: var(--radius);
       overflow: hidden;
-      height: 520px;
       border: 1px solid var(--color-border);
-      position: relative;
-      transition: border-color 0.5s ease, box-shadow 0.5s ease;
+      cursor: ew-resize;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
     }
 
-    .comparison__window--before { border-color: var(--color-border); }
-
-    .comparison__window--after {
-      border-color: rgba(230,57,70,0.3);
-      animation: glowPulse 3.5s ease-in-out infinite;
+    .comparison__side {
+      position: absolute;
+      inset: 0;
     }
-
-    @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 0 rgba(230,57,70,0); }
-      50%       { box-shadow: 0 0 32px rgba(230,57,70,0.2); }
-    }
-
-    .comparison__window iframe {
+    .comparison__side iframe {
       width: 100%;
       height: 100%;
       border: none;
+      pointer-events: none;
+      display: block;
     }
+    .comparison__side--after {
+      clip-path: inset(0 0 0 50%);
+      will-change: clip-path;
+    }
+
+    .comparison__handle {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 20;
+      pointer-events: none;
+      will-change: left;
+    }
+    .comparison__handle-line {
+      flex: 1;
+      width: 2px;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 0 12px rgba(0,0,0,0.5);
+    }
+    .comparison__handle-btn {
+      width: 44px; height: 44px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.55), 0 0 0 3px rgba(255,31,46,0.5);
+      flex-shrink: 0;
+      color: #111;
+      animation: handle-pulse 2s ease-in-out infinite;
+    }
+    @keyframes handle-pulse {
+      0%, 100% { box-shadow: 0 2px 24px rgba(0,0,0,0.55), 0 0 0 3px rgba(255,31,46,0.5); }
+      50%       { box-shadow: 0 2px 24px rgba(0,0,0,0.55), 0 0 0 7px rgba(255,31,46,0.2), 0 0 20px rgba(255,31,46,0.3); }
+    }
+
+    .comparison__badge {
+      position: absolute;
+      top: 16px;
+      z-index: 15;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+    .comparison__badge--before {
+      left: 16px;
+      color: var(--color-text-subtle);
+      border: 1px solid var(--color-border);
+    }
+    .comparison__badge--after {
+      right: 16px;
+      color: var(--color-accent);
+      border: 1px solid rgba(255,31,46,0.35);
+    }
+
+    .comparison__hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 15;
+      background: rgba(10,10,10,0.82);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--color-border);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 0.72rem;
+      color: var(--color-text-muted);
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      white-space: nowrap;
+    }
+    .comparison__hint.is-hidden { opacity: 0; }
 
     /* ========== ABOUT ========== */
     .about { background: var(--color-bg-subtle); }
@@ -892,7 +1005,7 @@
       border-color: var(--color-accent);
       color: var(--color-accent);
       transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(230,57,70,0.2);
+      box-shadow: 0 6px 20px rgba(255,31,46,0.2);
     }
     .footer__social-link svg { width: 18px; height: 18px; }
 
@@ -1056,13 +1169,11 @@
       /* Portfolio */
       .portfolio__project { grid-template-columns: 1fr; padding: 20px; gap: 24px; margin-bottom: 32px; }
       .portfolio__preview-wrap { height: 280px; }
-      /* Disable iframe pointer events on mobile to prevent scroll blocking */
-      .portfolio__preview-wrap iframe,
-      .comparison__window iframe { pointer-events: none; }
+      /* Disable iframe pointer events on mobile */
+      .portfolio__preview-wrap iframe { pointer-events: none; }
 
       /* Comparison */
-      .comparison__grid { grid-template-columns: 1fr; gap: 20px; }
-      .comparison__window { height: 350px; }
+      .comparison__slider { height: 380px; }
 
       /* About */
       .about__inner { grid-template-columns: 1fr; gap: 32px; }
@@ -1133,7 +1244,7 @@
 
     @media (max-width: 480px) {
       .portfolio__preview-wrap { height: 240px; }
-      .comparison__window { height: 300px; }
+      .comparison__slider { height: 320px; }
     }
 
     @media (max-width: 380px) {
@@ -1149,14 +1260,6 @@
 
 
     /* ========== SCROLL PROGRESS BAR ========== */
-    .scroll-progress {
-      position: fixed; top: 0; left: 0; z-index: 1000;
-      height: 3px; width: 0;
-      background: var(--color-accent);
-      transition: width 0.1s linear;
-      pointer-events: none;
-    }
-
     /* ========== FAQ ========== */
     .faq__list { display: flex; flex-direction: column; gap: 12px; }
     .faq__question {
@@ -1227,7 +1330,7 @@
     }
     .info-modal__body h2 {
       font-family: 'Syne', sans-serif; font-weight: 700;
-      font-size: 0.875rem; color: #E63946;
+      font-size: 0.875rem; color: #FF1F2E;
       margin: 18px 0 6px; letter-spacing: 0.06em; text-transform: uppercase;
     }
     .info-modal__body h2:first-child { margin-top: 0; }
@@ -1290,7 +1393,7 @@
     width: 18px; height: 18px; background: #888; border-radius: 50%;
     transition: transform 0.3s, background 0.3s;
   }
-  .cookie-toggle input[type="checkbox"]:checked { background: #E63946; }
+  .cookie-toggle input[type="checkbox"]:checked { background: #FF1F2E; }
   .cookie-toggle input[type="checkbox"]:checked::after { transform: translateX(20px); background: #fff; }
   .cookie-toggle input[type="checkbox"]:disabled { opacity: 0.6; cursor: not-allowed; }
   .cookie-toggle__label { font-size: 0.75rem; color: #555; white-space: nowrap; }
@@ -1384,14 +1487,14 @@
 
   .m-progress { margin-bottom: 24px; }
   .m-progress__track { height: 3px; background: #222; border-radius: 100px; overflow: hidden; margin-bottom: 8px; }
-  .m-progress__fill { height: 100%; background: #E63946; border-radius: 100px; transition: width 0.45s ease; }
+  .m-progress__fill { height: 100%; background: #FF1F2E; border-radius: 100px; transition: width 0.45s ease; }
   .m-progress__meta { display: flex; justify-content: space-between; align-items: center; }
   .m-progress__label { font-size: 0.8125rem; color: #555; }
   .m-progress__label strong { color: #888; }
   .m-progress__dots { display: flex; gap: 6px; }
   .m-dot { width: 6px; height: 6px; border-radius: 50%; background: #222; transition: background 0.3s, transform 0.3s; }
-  .m-dot.is-done    { background: #E63946; transform: scale(1.1); }
-  .m-dot.is-current { background: #E63946; box-shadow: 0 0 0 3px rgba(230,57,70,0.2); transform: scale(1.2); }
+  .m-dot.is-done    { background: #FF1F2E; transform: scale(1.1); }
+  .m-dot.is-current { background: #FF1F2E; box-shadow: 0 0 0 3px rgba(255,31,46,0.2); transform: scale(1.2); }
 
   .m-card { background: #111; border: 1px solid #222; border-radius: 12px; overflow: hidden; }
   .m-steps-wrap { position: relative; overflow: hidden; min-height: 280px; padding: 28px 28px 8px; max-width: 100%; }
@@ -1413,7 +1516,7 @@
 
   .m-group { display: flex; flex-direction: column; gap: 6px; }
   .m-label { font-size: 0.875rem; font-weight: 500; color: #888; }
-  .m-label .req { color: #E63946; margin-left: 2px; }
+  .m-label .req { color: #FF1F2E; margin-left: 2px; }
   .m-label .opt { color: #555; font-weight: 400; font-size: 0.8em; margin-left: 4px; }
 
   .m-input, .m-select, .m-textarea {
@@ -1424,10 +1527,10 @@
   }
   .m-input::placeholder, .m-textarea::placeholder { color: #555; }
   .m-input:focus, .m-select:focus, .m-textarea:focus {
-    outline: none; border-color: #E63946; box-shadow: 0 0 0 3px rgba(230,57,70,0.1);
+    outline: none; border-color: #FF1F2E; box-shadow: 0 0 0 3px rgba(255,31,46,0.1);
   }
-  .m-input.is-error, .m-select.is-error, .m-textarea.is-error { border-color: #E63946; }
-  .m-error { font-size: 0.8125rem; color: #E63946; display: none; }
+  .m-input.is-error, .m-select.is-error, .m-textarea.is-error { border-color: #FF1F2E; }
+  .m-error { font-size: 0.8125rem; color: #FF1F2E; display: none; }
   .m-error.is-visible { display: block; }
 
   .m-select {
@@ -1449,9 +1552,9 @@
     transition: all 0.3s; min-height: 44px; justify-content: center;
   }
   .m-radio-label:hover { border-color: #333; color: #fff; }
-  .m-radio-card input:checked + .m-radio-label { border-color: #E63946; color: #E63946; background: rgba(230,57,70,0.08); }
+  .m-radio-card input:checked + .m-radio-label { border-color: #FF1F2E; color: #FF1F2E; background: rgba(255,31,46,0.08); }
   .m-radio-label__sub { font-size: 0.75rem; font-weight:400; color:#555; }
-  .m-radio-card input:checked + .m-radio-label .m-radio-label__sub { color: rgba(230,57,70,0.6); }
+  .m-radio-card input:checked + .m-radio-label .m-radio-label__sub { color: rgba(255,31,46,0.6); }
   .m-other-reveal { display:none; margin-top: 6px; }
   .m-other-reveal.is-visible { display: block; }
 
@@ -1459,7 +1562,7 @@
     display: flex; align-items: center; background: #1A1A1A; border: 1px solid #222;
     border-radius: 8px; overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s;
   }
-  .m-social-field:focus-within { border-color: #E63946; box-shadow: 0 0 0 3px rgba(230,57,70,0.1); }
+  .m-social-field:focus-within { border-color: #FF1F2E; box-shadow: 0 0 0 3px rgba(255,31,46,0.1); }
   .m-social-icon {
     flex-shrink: 0; width: 46px; height: 46px; display: flex; align-items: center;
     justify-content: center; border-right: 1px solid #222; color: #555;
@@ -1476,7 +1579,7 @@
   .m-check-group { display: flex; align-items: flex-start; gap: 10px; }
   .m-check-group input[type="checkbox"] {
     width: 20px; height: 20px; border: 1px solid #222; border-radius: 4px;
-    background: #1A1A1A; cursor: pointer; flex-shrink: 0; margin-top: 2px; accent-color: #E63946;
+    background: #1A1A1A; cursor: pointer; flex-shrink: 0; margin-top: 2px; accent-color: #FF1F2E;
   }
   .m-check-label { font-size: 0.875rem; color: #888; line-height: 1.6; cursor: pointer; }
 
@@ -1495,23 +1598,23 @@
     transition: background 0.3s, color 0.3s, border-color 0.3s, transform 0.2s, box-shadow 0.3s;
     white-space: nowrap;
   }
-  .m-btn:focus-visible { outline: 2px solid #E63946; outline-offset: 3px; }
-  .m-btn--primary { background: #E63946; color: #fff; }
-  .m-btn--primary:hover { background: #FF4D5A; transform: scale(1.02); box-shadow: 0 0 20px rgba(230,57,70,0.3); }
+  .m-btn:focus-visible { outline: 2px solid #FF1F2E; outline-offset: 3px; }
+  .m-btn--primary { background: #FF1F2E; color: #fff; }
+  .m-btn--primary:hover { background: #FF4D5A; transform: scale(1.02); box-shadow: 0 0 20px rgba(255,31,46,0.3); }
   .m-btn--ghost { background: transparent; color: #888; border: 1px solid #222; }
   .m-btn--ghost:hover { border-color: #333; color: #fff; }
   .m-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 
   .m-success { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 48px 28px; gap: 14px; }
   .m-success.is-visible { display: flex; }
-  .m-success__icon { width: 60px; height: 60px; color: #E63946; }
+  .m-success__icon { width: 60px; height: 60px; color: #FF1F2E; }
   .m-success__title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem; }
   .m-success__text { font-size: 1rem; color: #888; max-width: 340px; line-height: 1.7; }
   .m-success__close {
     font-size: 0.875rem; color: #555; cursor: pointer; margin-top: 4px;
     background: none; border: none; font-family: 'DM Sans', sans-serif; transition: color 0.3s;
   }
-  .m-success__close:hover { color: #E63946; text-decoration: underline; text-underline-offset: 3px; }
+  .m-success__close:hover { color: #FF1F2E; text-decoration: underline; text-underline-offset: 3px; }
 
   /* Check cards (step 4) */
   .m-check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -1525,9 +1628,9 @@
     transition: all 0.3s; min-height: 44px; justify-content: center;
   }
   .m-check-card .m-check-label:hover { border-color: #333; color: #fff; }
-  .m-check-card input:checked + .m-check-label { border-color: #E63946; color: #E63946; background: rgba(230,57,70,0.08); }
+  .m-check-card input:checked + .m-check-label { border-color: #FF1F2E; color: #FF1F2E; background: rgba(255,31,46,0.08); }
   .m-check-label__sub { font-size: 0.75rem; font-weight: 400; color: #555; }
-  .m-check-card input:checked + .m-check-label .m-check-label__sub { color: rgba(230,57,70,0.6); }
+  .m-check-card input:checked + .m-check-label .m-check-label__sub { color: rgba(255,31,46,0.6); }
 
   @media (max-width: 480px) {
     .m-radio-grid { grid-template-columns: 1fr; }
@@ -1544,7 +1647,6 @@
 </head>
 <body>
 
-<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
 
 <!-- ========== HEADER ========== -->
 <header class="header" id="header" role="banner">
@@ -1686,24 +1788,24 @@
 
     <div class="why__grid">
       <div class="why__block reveal" style="transition-delay:0.06s">
-        <p class="why__block-number">01</p>
-        <h3 class="why__block-title">Strony pod sprzedaż</h3>
-        <p class="why__block-text">Nie robimy ładnych stron. Robimy strony, które konwertują odwiedzających w klientów.</p>
+        <p class="why__block-number" data-n="01">01</p>
+        <h3 class="why__block-title" style="position:relative;z-index:1">Strony pod sprzedaż</h3>
+        <p class="why__block-text" style="position:relative;z-index:1">Nie robimy ładnych stron. Robimy strony, które konwertują odwiedzających w klientów.</p>
       </div>
       <div class="why__block reveal" style="transition-delay:0.14s">
-        <p class="why__block-number">02</p>
-        <h3 class="why__block-title">Psychologia użytkownika</h3>
-        <p class="why__block-text">Wiemy, co sprawia, że ludzie klikają, scrollują i kupują. Każdy element ma swoje miejsce i cel.</p>
+        <p class="why__block-number" data-n="02">02</p>
+        <h3 class="why__block-title" style="position:relative;z-index:1">Psychologia użytkownika</h3>
+        <p class="why__block-text" style="position:relative;z-index:1">Wiemy, co sprawia, że ludzie klikają, scrollują i kupują. Każdy element ma swoje miejsce i cel.</p>
       </div>
       <div class="why__block reveal" style="transition-delay:0.22s">
-        <p class="why__block-number">03</p>
-        <h3 class="why__block-title">Doświadczenie w e-commerce</h3>
-        <p class="why__block-text">Tworzyliśmy sklepy, które generowały realne wyniki. Nie teoretyzujemy - działamy.</p>
+        <p class="why__block-number" data-n="03">03</p>
+        <h3 class="why__block-title" style="position:relative;z-index:1">Doświadczenie w e-commerce</h3>
+        <p class="why__block-text" style="position:relative;z-index:1">Tworzyliśmy sklepy, które generowały realne wyniki. Nie teoretyzujemy - działamy.</p>
       </div>
       <div class="why__block reveal" style="transition-delay:0.30s">
-        <p class="why__block-number">04</p>
-        <h3 class="why__block-title">Konkretna współpraca</h3>
-        <p class="why__block-text">Zero lania wody. Jasny plan, ustalony termin, efekt, który widać.</p>
+        <p class="why__block-number" data-n="04">04</p>
+        <h3 class="why__block-title" style="position:relative;z-index:1">Konkretna współpraca</h3>
+        <p class="why__block-text" style="position:relative;z-index:1">Zero lania wody. Jasny plan, ustalony termin, efekt, który widać.</p>
       </div>
     </div>
   </div>
@@ -1756,6 +1858,8 @@
 </section>
 
 
+
+
 <!-- ========== BEFORE / AFTER ========== -->
 <section class="section comparison" id="przed-po" aria-labelledby="comparison-heading">
   <div class="container">
@@ -1765,28 +1869,32 @@
       <p class="section__subtitle">Dwie wersje tej samej firmy. Jedna traci klientów, druga ich przyciąga.</p>
     </header>
 
-    <div class="comparison__grid">
+    <div class="comparison__slider reveal" id="comparison-slider" role="img" aria-label="Porównanie starej i nowej strony — przeciągnij suwak aby porównać">
 
-      <!-- PRZED -->
-      <div class="comparison__panel reveal" style="transition-delay:0.05s">
-        <div class="comparison__label comparison__label--before">
-          <span class="comparison__label-dot"></span>
-          Przed - stara strona
-        </div>
-        <div class="comparison__window comparison__window--before">
-          <iframe id="iframe-before" title="Przykład przestarzałej strony internetowej - Przed" aria-label="Scrollowalny przykład starej strony twojastrona.pl"></iframe>
-        </div>
+      <div class="comparison__side comparison__side--before">
+        <iframe id="iframe-before" title="Przed — przestarzała strona" aria-hidden="true"></iframe>
       </div>
 
-      <!-- PO -->
-      <div class="comparison__panel reveal" style="transition-delay:0.15s">
-        <div class="comparison__label comparison__label--after">
-          <span class="comparison__label-dot"></span>
-          Po - DigitalAbyss
+      <div class="comparison__side comparison__side--after" id="comparison-after">
+        <iframe id="iframe-after" title="Po — nowa strona DigitalAbyss" aria-hidden="true"></iframe>
+      </div>
+
+      <div class="comparison__handle" id="comparison-handle" aria-hidden="true">
+        <div class="comparison__handle-line"></div>
+        <div class="comparison__handle-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6" style="transform:translateX(-2px)"/>
+            <polyline points="9 18 15 12 9 6" style="transform:translateX(2px)"/>
+          </svg>
         </div>
-        <div class="comparison__window comparison__window--after">
-          <iframe id="iframe-after" title="Nowoczesna strona wykonana przez DigitalAbyss - Po" aria-label="Scrollowalny przykład nowoczesnej strony twojastrona.pl"></iframe>
-        </div>
+        <div class="comparison__handle-line"></div>
+      </div>
+
+      <div class="comparison__badge comparison__badge--before" aria-hidden="true">Przed</div>
+      <div class="comparison__badge comparison__badge--after" aria-hidden="true">Po — DigitalAbyss</div>
+
+      <div class="comparison__hint" id="comparison-hint" aria-hidden="true">
+        ← Przeciągnij aby porównać →
       </div>
 
     </div>
@@ -2470,9 +2578,9 @@
     // Cursor glow
     if (!isMobile() && mouse.x > 0 && mouse.x < W) {
       const g = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 120);
-      g.addColorStop(0,   'rgba(230,57,70,0.08)');
-      g.addColorStop(0.6, 'rgba(230,57,70,0.025)');
-      g.addColorStop(1,   'rgba(230,57,70,0)');
+      g.addColorStop(0,   'rgba(255,31,46,0.08)');
+      g.addColorStop(0.6, 'rgba(255,31,46,0.025)');
+      g.addColorStop(1,   'rgba(255,31,46,0)');
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
     }
@@ -2495,9 +2603,9 @@
 
       // Node glow
       const g = ctx.createRadialGradient(px, py, 0, px, py, n.r * 5);
-      g.addColorStop(0,   `rgba(230,57,70,${0.6 + 0.3 * pulse})`);
-      g.addColorStop(0.3, `rgba(230,57,70,${0.15 + 0.08 * pulse})`);
-      g.addColorStop(1,   'rgba(230,57,70,0)');
+      g.addColorStop(0,   `rgba(255,31,46,${0.6 + 0.3 * pulse})`);
+      g.addColorStop(0.3, `rgba(255,31,46,${0.15 + 0.08 * pulse})`);
+      g.addColorStop(1,   'rgba(255,31,46,0)');
       ctx.beginPath();
       ctx.arc(px, py, n.r * 5, 0, Math.PI * 2);
       ctx.fillStyle = g;
@@ -2506,7 +2614,7 @@
       // Node dot
       ctx.beginPath();
       ctx.arc(px, py, n.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(230,57,70,${0.8 + 0.2 * pulse})`;
+      ctx.fillStyle = `rgba(255,31,46,${0.8 + 0.2 * pulse})`;
       ctx.fill();
 
       // Connections
@@ -2621,9 +2729,9 @@
     ctx.fill();
 
     // Head glow
-    ctx.shadowColor = '#E63946';
+    ctx.shadowColor = '#FF1F2E';
     ctx.shadowBlur = 22;
-    ctx.strokeStyle = '#E63946';
+    ctx.strokeStyle = '#FF1F2E';
     ctx.lineWidth = 2;
     ctx.globalAlpha = 0.75;
     ctx.beginPath();
@@ -2660,7 +2768,7 @@
       if (y >= 0 && y <= H + FS && !inAv(x, y)) {
         const isHead = (drops[i] % 1) < 0.1;
         ctx.globalAlpha = isHead ? 1 : 0.22 + Math.random() * 0.52;
-        ctx.fillStyle   = isHead ? '#FF8090' : '#E63946';
+        ctx.fillStyle   = isHead ? '#FF8090' : '#FF1F2E';
         ctx.fillText(CHARS[Math.random() * CHARS.length | 0], x - FS * 0.35, y);
       }
       if (drops[i] * FS > H && Math.random() > 0.975) drops[i] = -(Math.random() * 14 | 0);
@@ -2677,204 +2785,263 @@
 })();
 
 
+
+
 /* ========== BEFORE / AFTER IFRAME CONTENT ========== */
 (function() {
-  const beforeHTML = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:#d4d0c8; font-family:Arial,sans-serif; font-size:14px; color:#333; min-width:750px; }
-  .header { background:linear-gradient(180deg,#4a7aba 0%,#2a4f8a 60%,#1a3060 100%); padding:12px 0; text-align:center; border-bottom:3px solid #ffd700; }
-  .header h1 { color:#fff; font-size:22px; font-family:'Times New Roman',serif; text-shadow:2px 2px 4px #000; }
-  .header p  { color:#add8e6; font-size:11px; margin-top:3px; }
-  .nav { background:#e8e4dc; border-bottom:2px solid #999; padding:6px 0; text-align:center; }
-  .nav a { color:#00008b; font-weight:bold; font-size:13px; text-decoration:none; padding:0 12px; border-right:1px solid #999; }
-  .nav a:last-child { border-right:none; }
-  .nav a:hover { text-decoration:underline; color:#cc0000; }
-  .counter-bar { background:#ffffcc; border:1px solid #cc9900; text-align:center; font-size:11px; padding:4px; color:#666; }
-  .content { max-width:760px; margin:0 auto; padding:14px; background:#fff; border-left:1px solid #999; border-right:1px solid #999; }
-  .content h2 { font-family:'Times New Roman',serif; color:#00008b; font-size:18px; border-bottom:2px solid #cc0000; padding-bottom:4px; margin-bottom:10px; }
-  .content p { margin-bottom:10px; line-height:1.6; font-size:13px; }
-  .img-placeholder { background:#c0c0c0; border:2px inset #888; width:180px; height:130px; float:left; margin:0 12px 10px 0; display:flex; align-items:center; justify-content:center; font-size:11px; color:#555; text-align:center; font-style:italic; }
-  .blink { animation:blinker 1.2s step-start infinite; color:#cc0000; font-weight:bold; font-size:15px; display:block; text-align:center; margin:10px; }
-  @keyframes blinker { 50%{opacity:0} }
-  .section-box { background:#f0f0e8; border:1px solid #ccc; padding:10px; margin:10px 0; }
-  .section-box h3 { color:#006600; font-size:14px; margin-bottom:6px; }
-  .cta-btn { display:inline-block; background:#ff6600; color:#fff; font-weight:bold; font-size:14px; padding:8px 16px; border:2px outset #ffaa66; text-decoration:none; margin:8px 0; font-family:'Times New Roman',serif; cursor:pointer; }
-  .marquee { background:#000080; color:#ffff00; font-size:12px; padding:4px; overflow:hidden; white-space:nowrap; }
-  .footer { background:#2a4f8a; color:#ddd; text-align:center; font-size:11px; padding:10px; margin-top:14px; border-top:3px double #ffd700; }
-  .footer a { color:#add8e6; }
-  .clearfix::after { content:''; display:table; clear:both; }
-  .oferta-grid { display:table; width:100%; border-collapse:collapse; }
-  .oferta-grid td { border:1px solid #ccc; padding:8px; width:33%; background:#f8f8f0; vertical-align:top; }
-</style>
-</head>
-<body>
+  // BEFORE — old-school chaotic site (left side)
+  var beforeHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#c8c4bc;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#222;min-width:700px}
+  marquee{background:#000080;color:#ffff00;font-weight:bold;font-size:13px;padding:4px 0}
+  .top-bar{background:#b22222;padding:3px 8px;display:flex;justify-content:space-between;font-size:11px;color:#ffe;border-bottom:2px solid #8b0000}
+  .header{background:linear-gradient(135deg,#003399 0%,#0055cc 40%,#003399 100%);padding:16px;text-align:center;border-bottom:4px solid #ffd700;position:relative}
+  .header h1{color:#fff;font-size:26px;font-family:'Times New Roman',serif;text-shadow:3px 3px 6px #000,0 0 20px rgba(255,215,0,0.5);letter-spacing:1px}
+  .header p{color:#add8e6;font-size:11px;margin-top:4px}
+  .header .badge{position:absolute;top:10px;right:10px;background:#ff6600;color:#fff;font-size:10px;font-weight:bold;padding:4px 8px;border:2px outset #ffaa66;border-radius:3px}
+  .nav{background:linear-gradient(#e0dbd0,#c8c2b8);border-top:1px solid #fff;border-bottom:3px solid #999;padding:0;display:flex}
+  .nav a{color:#00008b;font-weight:bold;font-size:12px;text-decoration:none;padding:7px 14px;border-right:1px solid #aaa;display:block}
+  .nav a:hover{background:#b0a898;color:#000}
+  .nav a:first-child{background:#e8e2d8}
+  .counter{background:#ffffaa;border:1px solid #cc9900;border-top:none;text-align:center;font-size:11px;padding:3px;color:#666}
+  .layout{display:flex;gap:0;max-width:100%}
+  .sidebar{width:160px;flex-shrink:0;background:#ddd8cc;border-right:2px solid #999;padding:8px}
+  .sidebar h3{background:#003399;color:#fff;font-size:11px;padding:4px 6px;margin:-8px -8px 8px;font-family:'Times New Roman',serif}
+  .sidebar ul{list-style:none}
+  .sidebar li{border-bottom:1px dashed #aaa;padding:4px 0}
+  .sidebar a{color:#000080;font-size:11px;text-decoration:none;font-weight:bold}
+  .sidebar a:hover{text-decoration:underline;color:#cc0000}
+  .sidebar .ad{background:#ffffcc;border:2px dashed #cc9900;text-align:center;padding:8px;margin-top:10px;font-size:11px;color:#333}
+  .sidebar .ad b{display:block;color:#cc0000;font-size:13px}
+  .main{flex:1;padding:12px;background:#fff;border-left:1px solid #999}
+  .main h2{font-family:'Times New Roman',serif;color:#000080;font-size:19px;border-bottom:3px double #cc0000;padding-bottom:4px;margin-bottom:10px}
+  .main p{margin-bottom:8px;line-height:1.55;font-size:12px}
+  .img-box{background:#c0c0c0;border:3px inset #888;width:200px;height:140px;float:left;margin:0 14px 10px 0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#555;text-align:center;font-style:italic}
+  .blink{animation:bl 0.9s step-start infinite;color:#cc0000;font-weight:bold;font-size:15px;display:block;text-align:center;margin:8px 0;font-family:'Times New Roman',serif}
+  @keyframes bl{50%{opacity:0}}
+  .oferta{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px}
+  .oferta th{background:#003399;color:#fff;padding:5px;text-align:center;font-size:12px}
+  .oferta td{border:1px solid #ccc;padding:6px;vertical-align:top;background:#f9f9f2}
+  .oferta td:nth-child(even){background:#f0ece4}
+  .price{color:#cc0000;font-weight:bold;font-size:13px}
+  .section-box{background:#f5f2e8;border:1px solid #ccc;border-top:3px solid #003399;padding:10px;margin:10px 0}
+  .section-box h3{color:#003399;font-size:13px;margin-bottom:6px;font-family:'Times New Roman',serif}
+  .cta{display:inline-block;background:linear-gradient(#ff8800,#ff5500);color:#fff;font-weight:bold;font-size:14px;padding:8px 18px;border:2px outset #ffaa66;text-decoration:none;margin:6px 4px;font-family:Arial;cursor:pointer;box-shadow:2px 2px 4px rgba(0,0,0,0.3)}
+  .opinie{background:#fffff0;border:1px solid #ddd;padding:6px 10px;margin:6px 0;font-size:11px;font-style:italic;border-left:3px solid #003399}
+  .opinie b{color:#003399;font-style:normal}
+  .footer{background:linear-gradient(#002277,#001155);color:#add8e6;text-align:center;font-size:11px;padding:10px;margin-top:0;border-top:3px solid #ffd700}
+  .clearfix::after{content:'';display:table;clear:both}
+  .hot{background:#ff0000;color:#fff;font-size:10px;padding:1px 4px;border-radius:2px;vertical-align:middle}
+</style></head><body>
+<marquee>&#9733; NOWA OFERTA 2019 &#9733; BEZPŁATNA WYCENA &#9733; DZWOŃ: 600 123 456 &#9733; PROMOCJA DO KOŃCA MIESIĄCA &#9733;</marquee>
+<div class="top-bar"><span>Witaj, Gościu! | Czwartek, 14 Marzec 2019</span><span>&#128222; 600 123 456 | &#9993; biuro@firma.pl</span></div>
 <div class="header">
-  <h1>&#9670; twojastrona.pl &#9670;</h1>
-  <p>Witamy na naszej stronie internetowej! | Najlepsza firma w Twoim mieście!</p>
+  <div class="badge">NOWO&#346;&#262;!</div>
+  <h1>&#9733; FIRMA USŁUGI &amp; HANDEL &#9733;</h1>
+  <p>Twój zaufany partner w biznesie od 2003 roku! | NIP: 123-456-78-90 | REGON: 123456789</p>
 </div>
 <div class="nav">
-  <a href="#">Strona główna</a>
-  <a href="#">O nas</a>
-  <a href="#">Oferta</a>
-  <a href="#">Galeria</a>
-  <a href="#">Kontakt</a>
+  <a href="#">&#8962; Strona Główna</a><a href="#">&#9432; O Firmie</a><a href="#">&#9998; Oferta <span class="hot">HOT</span></a><a href="#">&#128247; Galeria</a><a href="#">&#128172; Opinie</a><a href="#">&#9993; Kontakt</a>
 </div>
-<div class="marquee">★ PROMOCJA ★ Dzwoń teraz! 600 123 456 ★ Szybka realizacja! ★ Gwarancja jakości! ★</div>
-<div class="counter-bar">Licznik odwiedzin: <strong>12&nbsp;847</strong> | Ostatnia aktualizacja: 14.03.2009 | Najlepiej wyświetlana w Internet Explorer 6.0</div>
-<div class="content">
-  <div class="clearfix">
-    <div class="img-placeholder">[ZDJĘCIE FIRMOWE]<br>300x200 px</div>
-    <h2>Witamy na naszej stronie!</h2>
-    <p style="font-family:'Times New Roman',serif; color:#333">Nasza firma działa na rynku od ponad 10 lat. Oferujemy <font color="red"><b>NAJWYŻSZĄ JAKOŚĆ</b></font> usług w konkurencyjnych cenach. Zapraszamy do zapoznania się z naszą ofertą oraz do kontaktu z naszymi specjalistami.</p>
-    <p>Posiadamy wieloletnie doświadczenie i zadowolonych klientów w całej Polsce. Gwarantujemy <b><u>terminowość</u></b> i <b><u>profesjonalizm</u></b> na każdym etapie realizacji zlecenia.</p>
-    <span class="blink">&#128994; OFERTA SPECJALNA - DZWOŃ TERAZ! &#128994;</span>
+<div class="counter">Licznik odwiedzin: <b>&#160;004 821&#160;</b> | Ostatnia aktualizacja strony: 12.03.2019 | Najlepiej wyświetlaj w IE 6.0, rozdzielczość 800x600</div>
+<div class="layout">
+  <div class="sidebar">
+    <h3>&#9658; MENU BOCZNE</h3>
+    <ul>
+      <li><a href="#">&#9658; Strony www</a></li><li><a href="#">&#9658; Sklepy</a></li><li><a href="#">&#9658; Projekty</a></li><li><a href="#">&#9658; Cennik</a></li><li><a href="#">&#9658; Realizacje</a></li><li><a href="#">&#9658; FAQ</a></li><li><a href="#">&#9658; Kontakt</a></li>
+    </ul>
+    <div class="ad"><b>&#128222; ZADZWOŃ!</b>600 123 456<br><small>Pon-Pt 8-17</small></div>
+    <div style="margin-top:10px;text-align:center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" width="88" height="31" style="background:#ccc;border:1px solid #999" alt="banner"/><br><small style="font-size:9px">Reklama</small></div>
   </div>
-  <h2>Nasza Oferta</h2>
-  <table class="oferta-grid">
-    <tr>
-      <td><h3>&#9658; Usługa A</h3><div class="img-placeholder" style="width:100%;height:80px;">[ZDJĘCIE]</div><p style="font-size:12px">Opis usługi A. Bardzo dobra jakość w niskiej cenie.</p><font color="red" size="2"><b>od 299 zł</b></font></td>
-      <td><h3>&#9658; Usługa B</h3><div class="img-placeholder" style="width:100%;height:80px;">[ZDJĘCIE]</div><p style="font-size:12px">Opis usługi B. Polecamy serdecznie!</p><font color="red" size="2"><b>od 499 zł</b></font></td>
-      <td><h3>&#9658; Usługa C</h3><div class="img-placeholder" style="width:100%;height:80px;">[ZDJĘCIE]</div><p style="font-size:12px">Opis usługi C. Zadzwoń po wycenę!</p><font color="red" size="2"><b>wycena</b></font></td>
-    </tr>
-  </table>
-  <div class="section-box" style="margin-top:12px">
-    <h3>&#9733; Dlaczego my?</h3>
-    <p style="font-size:12px">&#10003; 10 lat doświadczenia &#160; &#10003; Niska cena &#160; &#10003; Szybka realizacja &#160; &#10003; Gwarancja &#160; &#10003; Zadowoleni klienci</p>
-    <a class="cta-btn" href="#">&#128222; ZADZWOŃ TERAZ: 600 123 456</a>
+  <div class="main">
+    <div class="clearfix">
+      <div class="img-box">[ZDJĘCIE FIRMOWE]<br>do wstawienia</div>
+      <h2>Witamy na stronie naszej Firmy!</h2>
+      <p><font color="#000080" face="Times New Roman">Nasza firma działa na rynku od ponad <b>10 lat</b>. Oferujemy <font color="red"><b>NAJWYŻSZĄ JAKOŚĆ</b></font> usług w konkurencyjnych cenach. Specjalizujemy się w kompleksowej obsłudze klientów indywidualnych i biznesowych.</font></p>
+      <p>Posiadamy bogate doświadczenie i setki zadowolonych klientów w całej Polsce. Gwarantujemy <b><u>terminowość</u></b>, <b><u>profesjonalizm</u></b> i <b><u>uczciwe ceny</u></b>!</p>
+      <span class="blink">&#9888; OFERTA SPECJALNA - ZADZWOŃ TERAZ! &#9888;</span>
+    </div>
+    <h2>Nasza Oferta</h2>
+    <table class="oferta">
+      <tr><th>Usługa</th><th>Opis</th><th>Czas realizacji</th><th>Cena</th></tr>
+      <tr><td><b>&#9658; Strona www</b></td><td>Podstawowa strona wizytówkowa</td><td>14 dni roboczych</td><td><span class="price">od 500 zł</span></td></tr>
+      <tr><td><b>&#9658; Sklep WWW</b></td><td>Sklep internetowy z płatnościami</td><td>30 dni roboczych</td><td><span class="price">od 2000 zł</span></td></tr>
+      <tr><td><b>&#9658; Logo firmy</b></td><td>Projekt graficzny logo</td><td>7 dni roboczych</td><td><span class="price">od 200 zł</span></td></tr>
+    </table>
+    <div class="section-box">
+      <h3>&#9733; Dlaczego warto nam zaufać?</h3>
+      <p style="font-size:11px">&#10003; Ponad 10 lat na rynku &#160;&#160; &#10003; Uczciwe ceny &#160;&#160; &#10003; Szybka realizacja &#160;&#160; &#10003; Gwarancja jakości &#160;&#160; &#10003; Bezpłatna wycena</p>
+      <a class="cta" href="#">&#128222; ZADZWOŃ TERAZ!</a> <a class="cta" href="#" style="background:linear-gradient(#0055cc,#003399)">&#9993; NAPISZ DO NAS</a>
+    </div>
+    <h2>Opinie Klientów</h2>
+    <div class="opinie"><b>Jan K., Warszawa:</b> "Bardzo polecam! Profesjonalna obsługa i szybka realizacja. Na pewno wrócimy!"</div>
+    <div class="opinie"><b>Maria W., Kraków:</b> "Świetna firma, uczciwe ceny. Strona gotowa w terminie, jestem bardzo zadowolona!"</div>
+    <div class="opinie"><b>Piotr N., Gdańsk:</b> "Polecam wszystkim. Solidna robota za rozsądną cenę."</div>
   </div>
-  <div class="section-box">
-    <h3>Aktualności</h3>
-    <p style="font-size:11px; color:#666">2009-03-14: Aktualizacja cennika...<br>2009-02-28: Nowa galeria zdjęć online!<br>2009-01-15: Zapraszamy w nowym roku!</p>
-  </div>
-  <p style="font-size:11px; color:#888; margin-top:8px">Ta strona używa plików <font color="blue">cookies</font>. Odwiedzając ją, zgadzasz się na ich użycie. <a href="#">Więcej informacji</a></p>
 </div>
-<div class="footer">
-  <p>&copy; 2009 twojastrona.pl | Wszelkie prawa zastrzeżone | <a href="#">Regulamin</a> | <a href="#">Kontakt</a></p>
-  <p style="margin-top:4px; font-size:10px">Powered by WebProjekt24.pl v1.4 | Strona zoptymalizowana dla IE6 przy rozdzielczości 1024x768</p>
-</div>
+<div class="footer">Copyright &copy; 2003-2019 Firma Usługi i Handel | Wszelkie prawa zastrzeżone | Projekt i wykonanie: Studio Komputerowe "WebMaster" Kraków</div>
+</body></html>`;
 
-</body>
-</html>`;
-
-  const afterHTML = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+  // AFTER — modern DigitalAbyss (right side)
+  var afterHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#0A0A0A;color:#fff;font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.65;min-width:320px}
-  a{color:inherit;text-decoration:none}
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid #222;background:rgba(10,10,10,0.9)}
-  .nav__logo{font-family:'Syne',system-ui,sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:-0.01em}
-  .nav__logo span{color:#E63946}
-  .nav__cta{background:#E63946;color:#fff;font-weight:600;font-size:0.8rem;padding:9px 18px;border-radius:6px}
-  .hero{padding:64px 28px 56px;background:linear-gradient(160deg,#0A0A0A 0%,#130a0b 100%);position:relative;overflow:hidden}
-  .hero__tag{font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#E63946;display:flex;align-items:center;gap:8px;margin-bottom:18px}
-  .hero__tag::before{content:'';display:block;width:20px;height:1.5px;background:#E63946}
-  .hero h1{font-family:'Syne',system-ui,sans-serif;font-weight:800;font-size:clamp(1.8rem,5vw,2.5rem);line-height:1.1;letter-spacing:-0.02em;margin-bottom:16px}
-  .hero h1 em{font-style:normal;color:#E63946}
-  .hero p{color:#888;font-size:0.9375rem;max-width:460px;margin-bottom:28px;line-height:1.75}
-  .hero__ctas{display:flex;gap:12px;flex-wrap:wrap}
-  .btn-p{background:#E63946;color:#fff;font-weight:600;font-size:0.875rem;padding:12px 22px;border-radius:6px;display:inline-flex;align-items:center;gap:6px}
-  .btn-o{background:transparent;color:#fff;font-weight:600;font-size:0.875rem;padding:11px 22px;border-radius:6px;border:1px solid #333;display:inline-flex;align-items:center;gap:6px}
-  .hero__glow{position:absolute;top:-60px;right:-60px;width:360px;height:360px;background:radial-gradient(circle,rgba(230,57,70,0.1) 0%,transparent 70%);pointer-events:none}
-  .services{padding:48px 28px;background:#111}
-  .services h2{font-family:'Syne',system-ui,sans-serif;font-weight:800;font-size:1.5rem;margin-bottom:6px}
-  .services p{color:#888;font-size:0.875rem;margin-bottom:28px}
-  .services__grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .service-card{background:#1a1a1a;border:1px solid #222;border-radius:8px;padding:22px 18px}
-  .service-card:hover{border-color:#E63946}
-  .service-card__icon{width:36px;height:36px;color:#E63946;margin-bottom:12px}
-  .service-card h3{font-family:'Syne',system-ui,sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:6px}
-  .service-card p{font-size:0.8125rem;color:#666;line-height:1.6}
-  .social-proof{padding:40px 28px;background:#0A0A0A;border-top:1px solid #1a1a1a}
-  .social-proof h2{font-family:'Syne',system-ui,sans-serif;font-weight:700;font-size:1.25rem;margin-bottom:20px;text-align:center}
-  .reviews{display:flex;flex-direction:column;gap:12px}
-  .review{background:#111;border:1px solid #222;border-radius:8px;padding:18px}
-  .review__stars{color:#E63946;font-size:0.75rem;margin-bottom:8px}
-  .review__text{font-size:0.8125rem;color:#888;line-height:1.6;margin-bottom:8px;font-style:italic}
-  .review__author{font-size:0.75rem;color:#555;font-weight:600}
-  .footer{background:#111;border-top:1px solid #222;padding:28px;text-align:center}
-  .footer__logo{font-family:'Syne',system-ui,sans-serif;font-weight:700;font-size:1rem;margin-bottom:6px}
-  .footer__logo span{color:#E63946}
-  .footer p{font-size:0.75rem;color:#555}
-  svg{display:block}
-</style>
-</head>
-<body>
-<nav class="nav">
-  <div class="nav__logo">twoja<span>strona</span>.pl</div>
-  <div class="nav__cta">Wycena bezpłatna</div>
-</nav>
-<section class="hero">
-  <div class="hero__glow"></div>
-  <div class="hero__tag">Usługi profesjonalne</div>
-  <h1>Strona, która<br>pracuje dla Ciebie <em>24/7.</em></h1>
-  <p>Nowoczesna obecność online dla Twojego biznesu. Klienci znajdą Cię, zanim znajdą konkurencję.</p>
-  <div class="hero__ctas">
-    <div class="btn-p">Bezpłatna wycena</div>
-    <div class="btn-o">Zobacz ofertę</div>
+  body{background:#060606;font-family:'Segoe UI',system-ui,sans-serif;color:#fff;min-width:700px}
+  .nav{padding:18px 40px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #111}
+  .logo{font-weight:800;font-size:17px;letter-spacing:-0.03em;color:#fff}
+  .logo span{color:#FF1F2E}
+  .nav-links a{color:#666;font-size:12px;text-decoration:none;margin-left:24px;letter-spacing:0.01em}
+  .cta-btn{background:#FF1F2E;color:#fff;font-weight:700;font-size:12px;padding:9px 18px;border-radius:6px;text-decoration:none;margin-left:20px}
+  .hero{padding:56px 40px 48px;background:radial-gradient(ellipse at 30% 50%, rgba(255,31,46,0.07) 0%, transparent 60%)}
+  .tag{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#FF1F2E;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+  .tag::before{content:'';width:18px;height:1.5px;background:#FF1F2E;display:block;flex-shrink:0}
+  .hero h1{font-size:38px;font-weight:800;line-height:1.12;letter-spacing:-0.03em;margin-bottom:18px;max-width:560px}
+  .hero h1 em{font-style:normal;color:#FF1F2E}
+  .hero p{color:#666;font-size:15px;line-height:1.7;max-width:480px;margin-bottom:28px}
+  .btns{display:flex;gap:12px;align-items:center}
+  .btn-p{background:#FF1F2E;color:#fff;font-weight:700;font-size:13px;padding:12px 24px;border-radius:7px;text-decoration:none;display:inline-flex}
+  .btn-o{background:transparent;color:#fff;font-weight:600;font-size:13px;padding:12px 24px;border-radius:7px;text-decoration:none;border:1px solid #222;display:inline-flex}
+  .stats{display:flex;gap:0;border-top:1px solid #111;border-bottom:1px solid #111;background:#0a0a0a}
+  .stat{flex:1;padding:20px 30px;border-right:1px solid #111}
+  .stat:last-child{border-right:none}
+  .stat-n{font-size:26px;font-weight:800;letter-spacing:-0.03em;color:#fff}
+  .stat-n span{color:#FF1F2E}
+  .stat-l{font-size:11px;color:#555;margin-top:3px;letter-spacing:0.02em}
+  .services{padding:40px 40px 32px}
+  .s-tag{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#FF1F2E;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .s-tag::before{content:'';width:18px;height:1.5px;background:#FF1F2E;display:block}
+  .services h2{font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:20px}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .card{background:#0d0d0d;border:1px solid #141414;border-radius:8px;padding:20px;position:relative;overflow:hidden}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:#FF1F2E;opacity:0}
+  .card:first-child::before{opacity:1}
+  .ci{width:28px;height:28px;color:#FF1F2E;margin-bottom:12px}
+  .card h3{font-size:13px;font-weight:700;margin-bottom:6px;letter-spacing:-0.01em}
+  .card p{font-size:11px;color:#555;line-height:1.6}
+  .why{background:#0a0a0a;border-top:1px solid #111;padding:32px 40px}
+  .why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
+  .why-item{display:flex;gap:12px;align-items:flex-start;padding:14px;background:#0d0d0d;border:1px solid #141414;border-radius:7px}
+  .why-icon{width:32px;height:32px;background:rgba(255,31,46,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#FF1F2E;font-size:14px}
+  .why-item h4{font-size:12px;font-weight:700;margin-bottom:3px}
+  .why-item p{font-size:11px;color:#555;line-height:1.5}
+  .why h2{font-size:22px;font-weight:800;letter-spacing:-0.03em}
+</style></head><body>
+<div class="nav">
+  <div class="logo">Digital<span>Abyss</span></div>
+  <div><a href="#" class="nav-links" style="color:#888;font-size:12px;text-decoration:none;margin-right:20px">Oferta</a><a href="#" style="color:#888;font-size:12px;text-decoration:none;margin-right:20px">Realizacje</a><a href="#" style="color:#888;font-size:12px;text-decoration:none;margin-right:20px">O nas</a><a class="cta-btn" href="#">Wycena</a></div>
+</div>
+<div class="hero">
+  <div class="tag">Web Design &amp; Development</div>
+  <h1>Strony, które generują klientów — nie tylko <em>dobrze wyglądają.</em></h1>
+  <p>Większość stron nie konwertuje. My tworzymy takie, które to robią. Każdy projekt ma jeden cel — przyciągnąć klienta.</p>
+  <div class="btns"><a class="btn-p" href="#">Wycena projektu</a><a class="btn-o" href="#">Zobacz realizacje</a></div>
+</div>
+<div class="stats">
+  <div class="stat"><div class="stat-n">12<span>+</span></div><div class="stat-l">Projektów ukończonych</div></div>
+  <div class="stat"><div class="stat-n">100<span>%</span></div><div class="stat-l">Zadowolonych klientów</div></div>
+  <div class="stat"><div class="stat-n">3<span>x</span></div><div class="stat-l">Szybsze strony</div></div>
+  <div class="stat"><div class="stat-n">48<span>h</span></div><div class="stat-l">Czas odpowiedzi</div></div>
+</div>
+<div class="services">
+  <div class="s-tag">Oferta</div>
+  <h2>Co robimy</h2>
+  <div class="cards">
+    <div class="card"><svg class="ci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M7 15h2M11 15h6"/></svg><h3>Strony wizytówki</h3><p>Profesjonalna obecność Twojej firmy w sieci — jasny przekaz, gotowa na klientów.</p></div>
+    <div class="card"><svg class="ci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><h3>Sklepy e-commerce</h3><p>Sklepy internetowe zoptymalizowane pod konwersję i sprzedaż.</p></div>
+    <div class="card"><svg class="ci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><h3>Optymalizacja CRO</h3><p>Analizujemy i naprawiamy strony, które nie generują klientów.</p></div>
   </div>
-</section>
-<section class="services">
-  <h2>Co oferujemy</h2>
-  <p>Wszystko, czego potrzebuje Twoja firma w internecie.</p>
-  <div class="services__grid">
-    <div class="service-card">
-      <svg class="service-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-      <h3>Strona wizytówka</h3>
-      <p>Pierwsza klasa, profesjonalny wizerunek, gotowa na klientów.</p>
-    </div>
-    <div class="service-card">
-      <svg class="service-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12"/></svg>
-      <h3>Landing page</h3>
-      <p>Jeden cel, maksymalna konwersja. Idealny pod reklamy.</p>
-    </div>
-    <div class="service-card">
-      <svg class="service-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
-      <h3>Optymalizacja</h3>
-      <p>Strona nie działa? Naprawiamy to, co blokuje klientów.</p>
-    </div>
-    <div class="service-card">
-      <svg class="service-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
-      <h3>Sklep online</h3>
-      <p>Sprzedawaj przez internet. Szybko, estetycznie, skutecznie.</p>
-    </div>
+</div>
+<div class="why">
+  <h2>Dlaczego my?</h2>
+  <div class="why-grid">
+    <div class="why-item"><div class="why-icon">&#10003;</div><div><h4>Strony pod sprzedaż</h4><p>Nie robimy ładnych stron. Robimy strony, które konwertują.</p></div></div>
+    <div class="why-item"><div class="why-icon">&#128200;</div><div><h4>Psychologia UX</h4><p>Każdy element ma cel — skłonić odwiedzającego do działania.</p></div></div>
+    <div class="why-item"><div class="why-icon">&#9889;</div><div><h4>Szybka realizacja</h4><p>Przejrzysty plan, ustalony termin, efekt który widać.</p></div></div>
+    <div class="why-item"><div class="why-icon">&#128221;</div><div><h4>Konkretna wycena</h4><p>Zero lania wody. Odpowiedź w 48h, darmowa konsultacja.</p></div></div>
   </div>
-</section>
-<section class="social-proof">
-  <h2>Co mówią klienci</h2>
-  <div class="reviews">
-    <div class="review">
-      <div class="review__stars">★★★★★</div>
-      <p class="review__text">"Po odświeżeniu strony liczba zapytań wzrosła trzykrotnie w pierwszym miesiącu."</p>
-      <p class="review__author">- Anna K., właścicielka salonu kosmetycznego</p>
-    </div>
-    <div class="review">
-      <div class="review__stars">★★★★★</div>
-      <p class="review__text">"Wreszcie strona, która wygląda tak jak moja firma - profesjonalnie."</p>
-      <p class="review__author">- Marcin W., auto detailing</p>
-    </div>
-  </div>
-</section>
-<footer class="footer">
-  <div class="footer__logo">twoja<span>strona</span>.pl</div>
-  <p>Strona stworzona przez <strong style="color:#E63946">DigitalAbyss</strong> - strony, które sprzedają.</p>
-</footer>
-</body>
-</html>`;
+</div>
+</body></html>`;
 
-  const iframeBefore = document.getElementById('iframe-before');
-  const iframeAfter  = document.getElementById('iframe-after');
+  var iframeBefore = document.getElementById('iframe-before');
+  var iframeAfter  = document.getElementById('iframe-after');
   if (iframeBefore) iframeBefore.srcdoc = beforeHTML;
   if (iframeAfter)  iframeAfter.srcdoc  = afterHTML;
 })();
 
+
+/* ========== BEFORE / AFTER COMPARISON SLIDER ========== */
+(function() {
+  var slider  = document.getElementById('comparison-slider');
+  var after   = document.getElementById('comparison-after');
+  var handle  = document.getElementById('comparison-handle');
+  var hint    = document.getElementById('comparison-hint');
+  if (!slider || !after || !handle) return;
+
+  var dragging = false;
+  var looping  = false;
+  var loopRaf  = null;
+  var loopStart = null;
+  var PERIOD   = 5000; // ms per full back-and-forth cycle
+  var MIN_PCT  = 15;   // how far left (shows mostly new DigitalAbyss)
+  var MAX_PCT  = 85;   // how far right (shows mostly old site)
+
+  function setPct(pct) {
+    after.style.clipPath = 'inset(0 0 0 ' + pct.toFixed(2) + '%)';
+    handle.style.left    = pct.toFixed(2) + '%';
+  }
+
+  // Smooth sine-wave loop: oscillates between MIN_PCT and MAX_PCT
+  function loopStep(now) {
+    if (dragging) { loopRaf = requestAnimationFrame(loopStep); return; }
+    if (!loopStart) loopStart = now;
+    var t = ((now - loopStart) % PERIOD) / PERIOD; // 0..1 cycling
+    // Ease-in-out sine: starts slow, fast in middle, slow at ends
+    var sine = (1 - Math.cos(t * Math.PI * 2)) / 2; // 0..1..0..1
+    var pct = MIN_PCT + (MAX_PCT - MIN_PCT) * sine;
+    setPct(pct);
+    loopRaf = requestAnimationFrame(loopStep);
+  }
+
+  // Start loop when section enters viewport
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && !looping) {
+        looping = true;
+        loopStart = null;
+        loopRaf = requestAnimationFrame(loopStep);
+        if (hint) setTimeout(function() { hint.classList.add('is-hidden'); }, 2000);
+      } else if (!entry.isIntersecting && looping) {
+        looping = false;
+        cancelAnimationFrame(loopRaf);
+      }
+    });
+  }, { threshold: 0.3 });
+  io.observe(slider);
+
+  // Manual drag — overrides loop temporarily, loop resumes on pointerup
+  function setFromPointer(clientX) {
+    var rect = slider.getBoundingClientRect();
+    var pct = ((clientX - rect.left) / rect.width) * 100;
+    pct = Math.max(4, Math.min(96, pct));
+    setPct(pct);
+  }
+
+  slider.addEventListener('pointerdown', function(e) {
+    dragging = true;
+    slider.setPointerCapture(e.pointerId);
+    setFromPointer(e.clientX);
+    if (hint) hint.classList.add('is-hidden');
+  });
+  slider.addEventListener('pointermove', function(e) {
+    if (!dragging) return;
+    setFromPointer(e.clientX);
+  });
+  slider.addEventListener('pointerup', function() {
+    dragging = false;
+    // Sync loop phase to current position so it resumes smoothly
+    loopStart = null;
+  });
+  slider.addEventListener('pointercancel', function() { dragging = false; loopStart = null; });
+})();
 
 
 /* ========== HEADER SCROLL SHRINK ========== */
@@ -3014,17 +3181,34 @@
 })();
 
 
-/* ========== SCROLL PROGRESS BAR ========== */
+
+/* ========== MAGNETIC CTA BUTTON ========== */
 (function() {
-  var bar = document.getElementById('scroll-progress');
-  if (!bar) return;
-  window.addEventListener('scroll', function() {
-    var doc = document.documentElement;
-    var scrolled = (doc.scrollTop || document.body.scrollTop);
-    var total = doc.scrollHeight - doc.clientHeight;
-    bar.style.width = (total > 0 ? (scrolled / total * 100) : 0) + '%';
-  }, { passive: true });
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  const btn = document.querySelector('.hero__ctas .btn--primary');
+  if (!btn) return;
+
+  let raf = null, tx = 0, ty = 0;
+
+  btn.addEventListener('mousemove', (e) => {
+    const rect = btn.getBoundingClientRect();
+    tx = (e.clientX - rect.left - rect.width / 2) * 0.22;
+    ty = (e.clientY - rect.top  - rect.height / 2) * 0.22;
+    if (!raf) raf = requestAnimationFrame(apply);
+  });
+
+  btn.addEventListener('mouseleave', () => {
+    tx = 0; ty = 0;
+    if (!raf) raf = requestAnimationFrame(apply);
+  });
+
+  function apply() {
+    raf = null;
+    btn.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px)`;
+  }
 })();
+
+
 
 
 /* ========== FAQ ACCORDION ========== */
